@@ -7,9 +7,9 @@ import 'views/payment/payment_form_screen.dart';
 import 'views/payment/approved_payments_screen.dart';
 import 'views/payment/payment_history_screen.dart';
 import 'views/payment/preacher_payment_history_screen.dart';
-import 'views/activity/officer/officer_list_activities_screen.dart';
-import 'views/activity/preacher/preacher_assign_activity_screen.dart';
-import 'views/activity/preacher/preacher_list_activities_screen.dart';
+import 'views/ActivityManagement/officer/officer_list_activities_screen.dart';
+import 'views/ActivityManagement/preacher/preacher_assign_activity_screen.dart';
+import 'views/ActivityManagement/preacher/preacher_list_activities_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

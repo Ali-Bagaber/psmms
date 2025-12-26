@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../models/activity.dart';
 import '../../../models/activity_submission.dart';
 import '../../../viewmodels/preacher_activity_view_model.dart';
@@ -67,11 +68,28 @@ class PreacherViewActivityScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               _buildInfoCard(
+                title: 'Activity Type',
+                children: [
+                  Text(
+                    activity.activityType,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              _buildInfoCard(
                 title: 'Topic',
                 children: [
                   Text(
-                    activity.topic,
-                    style: const TextStyle(fontSize: 15),
+                    activity.topic.isEmpty ? 'No topic specified' : activity.topic,
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: activity.topic.isEmpty ? Colors.grey : Colors.black87,
+                      height: 1.5,
+                    ),
                   ),
                 ],
               ),
@@ -79,24 +97,27 @@ class PreacherViewActivityScreen extends StatelessWidget {
               _buildInfoCard(
                 title: 'Location',
                 children: [
-                  _buildInfoRow(Icons.location_on, activity.location),
-                  _buildInfoRow(Icons.place, activity.venue),
+                  _buildDetailRow(Icons.location_on_outlined, 'Address', activity.location),
                   const SizedBox(height: 12),
+                  _buildDetailRow(Icons.place_outlined, 'Venue', activity.venue),
+                  const SizedBox(height: 16),
                   Container(
-                    height: 200,
+                    height: 180,
                     decoration: BoxDecoration(
                       color: Colors.grey.shade200,
                       borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.grey.shade300),
                     ),
                     child: Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.map, size: 48, color: Colors.grey.shade400),
+                          Icon(Icons.map_outlined, size: 48, color: Colors.grey.shade400),
                           const SizedBox(height: 8),
-                          TextButton(
-                            onPressed: () {},
-                            child: const Text('View on Map'),
+                          TextButton.icon(
+                            onPressed: () => _openMap(context),
+                            icon: const Icon(Icons.open_in_new, size: 16),
+                            label: const Text('View on Map'),
                           ),
                         ],
                       ),
@@ -107,11 +128,32 @@ class PreacherViewActivityScreen extends StatelessWidget {
               if (activity.specialRequirements.isNotEmpty) ...[
                 const SizedBox(height: 16),
                 _buildInfoCard(
-                  title: 'Special Instructions',
+                  title: 'Special Requirements',
                   children: [
-                    Text(
-                      activity.specialRequirements,
-                      style: const TextStyle(fontSize: 15),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.shade50,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.blue.shade200),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(Icons.info_outline, size: 20, color: Colors.blue.shade700),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              activity.specialRequirements,
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.blue.shade900,
+                                height: 1.5,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -230,6 +272,71 @@ class PreacherViewActivityScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget _buildDetailRow(IconData icon, String label, String value) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, size: 20, color: const Color(0xFF0066FF)),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 13,
+                  color: Colors.grey[600],
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                value.isEmpty ? 'Not specified' : value,
+                style: TextStyle(
+                  fontSize: 15,
+                  color: value.isEmpty ? Colors.grey : Colors.black87,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _openMap(BuildContext context) async {
+    try {
+      // Try to open in Google Maps app first, then fallback to browser
+      final query = Uri.encodeComponent(activity.location);
+      final googleMapsUrl = 'https://www.google.com/maps/search/?api=1&query=$query';
+      final uri = Uri.parse(googleMapsUrl);
+      
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } else {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Could not open map'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error opening map: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   Widget _buildSubmissionCard(ActivitySubmission submission) {

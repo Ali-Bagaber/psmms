@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../../viewmodels/officer_activity_view_model.dart';
-import '../widgets/map_location_picker.dart';
+import '../Widget/map_location_picker.dart';
 
 class OfficerAddActivityScreen extends StatelessWidget {
   const OfficerAddActivityScreen({super.key});
@@ -175,7 +174,7 @@ class _OfficerAddActivityContentState extends State<_OfficerAddActivityContent> 
 
   Widget _buildActivityTypeDropdown() {
     return DropdownButtonFormField<String>(
-      value: _activityType,
+      initialValue: _activityType,
       decoration: InputDecoration(
         labelText: 'Activity Type *',
         filled: true,
@@ -213,7 +212,7 @@ class _OfficerAddActivityContentState extends State<_OfficerAddActivityContent> 
         borderRadius: BorderRadius.circular(12),
       ),
       child: DropdownButtonFormField<String>(
-        value: _urgency,
+        initialValue: _urgency,
         decoration: InputDecoration(
           labelText: 'Urgency Level *',
           filled: true,

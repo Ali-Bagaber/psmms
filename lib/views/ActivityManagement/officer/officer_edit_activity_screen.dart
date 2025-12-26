@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../../models/activity.dart';
 import '../../../viewmodels/officer_activity_view_model.dart';
-import '../widgets/map_location_picker.dart';
+import '../Widget/map_location_picker.dart';
 
 class OfficerEditActivityScreen extends StatelessWidget {
   final Activity activity;
@@ -123,7 +123,7 @@ class _OfficerEditActivityContentState extends State<_OfficerEditActivityContent
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 DropdownButtonFormField<String>(
-                  value: _activityType,
+                  initialValue: _activityType,
                   decoration: _inputDecoration('Activity Type'),
                   items: _activityTypes.map((type) {
                     return DropdownMenuItem(value: type, child: Text(type));
@@ -134,7 +134,7 @@ class _OfficerEditActivityContentState extends State<_OfficerEditActivityContent
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
-                  value: _urgency,
+                  initialValue: _urgency,
                   decoration: _inputDecoration('Urgency Level'),
                   items: _urgencyLevels.map((urgency) {
                     return DropdownMenuItem(

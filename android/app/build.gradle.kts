@@ -3,13 +3,13 @@ plugins {
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+    // Add the Google services Gradle plugin
     id("com.google.gms.google-services")
 }
 
 android {
     namespace = "com.example.psmms"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -25,10 +25,15 @@ android {
         applicationId = "com.example.psmms"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = 23
+        minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        
+        // Disable NDK since we don't use native C++ code
+        ndk {
+            abiFilters.clear()
+        }
     }
 
     buildTypes {
@@ -37,6 +42,12 @@ android {
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
         }
+    }
+
+    // Speed up builds
+    lint {
+        checkReleaseBuilds = false
+        abortOnError = false
     }
 }
 

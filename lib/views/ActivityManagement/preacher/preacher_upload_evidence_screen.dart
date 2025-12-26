@@ -105,7 +105,7 @@ class PreacherUploadEvidenceScreen extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                'Accepted formats: JPG, PNG. Maximum file size: 5MB',
+                'Accepted formats: JPG, PNG',
                 style: TextStyle(
                   fontSize: 13,
                   color: Colors.grey[600],
@@ -203,32 +203,6 @@ class PreacherUploadEvidenceScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
               ],
-              if (viewModel.selectedImages.length < 3) ...[
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.orange.shade50,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.orange.shade200),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.warning_amber, color: Colors.orange.shade700),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          'Upload failed for 1 photo. Please try again.',
-                          style: TextStyle(
-                            color: Colors.orange.shade700,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 24),
-              ],
               SizedBox(
                 width: double.infinity,
                 height: 50,
@@ -240,7 +214,7 @@ class PreacherUploadEvidenceScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  onPressed: (viewModel.selectedImages.length >= 3 && !viewModel.isLoading)
+                  onPressed: (viewModel.selectedImages.length >= 1 && !viewModel.isLoading)
                       ? () => _handleSubmit(context, viewModel)
                       : null,
                   child: viewModel.isLoading
@@ -296,10 +270,10 @@ class PreacherUploadEvidenceScreen extends StatelessWidget {
   }
 
   Future<void> _handleSubmit(BuildContext context, PreacherActivityViewModel viewModel) async {
-    if (viewModel.selectedImages.length < 3) {
+    if (viewModel.selectedImages.length < 1) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please upload at least 3 photos'),
+          content: Text('Please upload at least 1 photo'),
           backgroundColor: Colors.orange,
           behavior: SnackBarBehavior.floating,
         ),

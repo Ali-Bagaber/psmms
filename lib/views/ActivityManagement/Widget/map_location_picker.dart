@@ -19,10 +19,12 @@ class MapLocationPicker extends StatefulWidget {
 
 class _MapLocationPickerState extends State<MapLocationPicker> {
   late GoogleMapController _mapController;
-  LatLng _selectedLocation = const LatLng(3.1390, 101.6869); // Default: Kuala Lumpur
-  String _selectedAddress = 'Kuala Lumpur, Malaysia';
+  LatLng _selectedLocation = const LatLng(3.4918, 103.3976); // Default: Pekan, Malaysia
+  String _selectedAddress = 'Pekan, Pahang, Malaysia';
   bool _isLoading = false;
   final TextEditingController _searchController = TextEditingController();
+  Set<Marker> _nearbyMarkers = {};
+  String? _selectedCategory;
 
   @override
   void initState() {
@@ -148,6 +150,57 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
     }
   }
 
+  Future<void> _searchNearbyPlaces(String category) async {
+    setState(() {
+      _isLoading = true;
+      _selectedCategory = category;
+      _nearbyMarkers.clear();
+    });
+
+    try {
+      // Search for places near the current location
+      String searchQuery = '$category near ${_selectedAddress}';
+      List<Location> locations = await locationFromAddress(searchQuery);
+      
+      // Add markers for found locations (simplified - in production use Places API)
+      for (int i = 0; i < locations.take(5).length; i++) {
+        _nearbyMarkers.add(
+          Marker(
+            markerId: MarkerId('$category-$i'),
+            position: LatLng(locations[i].latitude, locations[i].longitude),
+            icon: BitmapDescriptor.defaultMarkerWithHue(
+              category == 'Restaurant' ? BitmapDescriptor.hueRed :
+              category == 'Gas Station' ? BitmapDescriptor.hueBlue :
+              category == 'Grocery' ? BitmapDescriptor.hueGreen :
+              BitmapDescriptor.hueOrange,
+            ),
+            infoWindow: InfoWindow(title: category),
+          ),
+        );
+      }
+      
+      setState(() => _isLoading = false);
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _nearbyMarkers.clear();
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('No $category found nearby')),
+        );
+      }
+    }
+  }
+
+  void _zoomIn() {
+    _mapController.animateCamera(CameraUpdate.zoomIn());
+  }
+
+  void _zoomOut() {
+    _mapController.animateCamera(CameraUpdate.zoomOut());
+  }
+
   void _onMapTapped(LatLng location) {
     setState(() {
       _selectedLocation = location;
@@ -162,6 +215,51 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
       'latitude': _selectedLocation.latitude,
       'longitude': _selectedLocation.longitude,
     });
+  }
+
+  Widget _buildCategoryButton(String label, IconData icon) {
+    final isSelected = _selectedCategory == label;
+    return Container(
+      decoration: BoxDecoration(
+        color: isSelected ? Colors.blue : Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => _searchNearbyPlaces(label),
+          borderRadius: BorderRadius.circular(24),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  icon,
+                  size: 20,
+                  color: isSelected ? Colors.white : Colors.black87,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: isSelected ? Colors.white : Colors.black87,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -196,9 +294,10 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                   _getAddressFromLatLng(newPosition);
                 },
               ),
+              ..._nearbyMarkers,
             },
             myLocationEnabled: true,
-            myLocationButtonEnabled: true,
+            myLocationButtonEnabled: false,
             mapType: MapType.normal,
             zoomControlsEnabled: false,
           ),
@@ -225,6 +324,65 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                   onSubmitted: _searchLocation,
                 ),
               ),
+            ),
+          ),
+
+          // Category buttons
+          Positioned(
+            top: 80,
+            left: 16,
+            right: 16,
+            child: SizedBox(
+              height: 50,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: [
+                  _buildCategoryButton('Restaurant', Icons.restaurant),
+                  const SizedBox(width: 8),
+                  _buildCategoryButton('Gas Station', Icons.local_gas_station),
+                  const SizedBox(width: 8),
+                  _buildCategoryButton('Grocery', Icons.shopping_cart),
+                  const SizedBox(width: 8),
+                  _buildCategoryButton('Hospital', Icons.local_hospital),
+                  const SizedBox(width: 8),
+                  _buildCategoryButton('School', Icons.school),
+                ],
+              ),
+            ),
+          ),
+
+          // Current location button
+          Positioned(
+            right: 16,
+            bottom: 200,
+            child: FloatingActionButton(
+              mini: true,
+              backgroundColor: Colors.white,
+              onPressed: _getCurrentLocation,
+              child: const Icon(Icons.my_location, color: Colors.black87),
+            ),
+          ),
+
+          // Zoom controls
+          Positioned(
+            right: 16,
+            bottom: 260,
+            child: Column(
+              children: [
+                FloatingActionButton(
+                  mini: true,
+                  backgroundColor: Colors.white,
+                  onPressed: _zoomIn,
+                  child: const Icon(Icons.add, color: Colors.black87),
+                ),
+                const SizedBox(height: 8),
+                FloatingActionButton(
+                  mini: true,
+                  backgroundColor: Colors.white,
+                  onPressed: _zoomOut,
+                  child: const Icon(Icons.remove, color: Colors.black87),
+                ),
+              ],
             ),
           ),
 
