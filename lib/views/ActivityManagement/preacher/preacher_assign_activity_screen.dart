@@ -14,10 +14,16 @@ class PreacherAssignActivityScreen extends StatelessWidget {
     required this.preacherName,
   });
 
-  static Widget withProvider({required String preacherId, required String preacherName}) {
+  static Widget withProvider({
+    required String preacherId,
+    required String preacherName,
+  }) {
     return ChangeNotifierProvider(
       create: (_) => PreacherActivityViewModel()..loadAvailableActivities(),
-      child: PreacherAssignActivityScreen(preacherId: preacherId, preacherName: preacherName),
+      child: PreacherAssignActivityScreen(
+        preacherId: preacherId,
+        preacherName: preacherName,
+      ),
     );
   }
 
@@ -81,7 +87,10 @@ class PreacherAssignActivityScreen extends StatelessWidget {
           ),
           filled: true,
           fillColor: Colors.white,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 12,
+          ),
         ),
       ),
     );
@@ -127,9 +136,20 @@ class PreacherAssignActivityScreen extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (label == 'Nearest') const Icon(Icons.near_me, size: 16, color: Colors.white),
-            if (label == 'Newest') Icon(Icons.access_time, size: 16, color: isSelected ? Colors.white : Colors.black87),
-            if (label == 'Urgent') Icon(Icons.priority_high, size: 16, color: isSelected ? Colors.white : Colors.black87),
+            if (label == 'Nearest')
+              const Icon(Icons.near_me, size: 16, color: Colors.white),
+            if (label == 'Newest')
+              Icon(
+                Icons.access_time,
+                size: 16,
+                color: isSelected ? Colors.white : Colors.black87,
+              ),
+            if (label == 'Urgent')
+              Icon(
+                Icons.priority_high,
+                size: 16,
+                color: isSelected ? Colors.white : Colors.black87,
+              ),
             const SizedBox(width: 4),
             Text(
               label,
@@ -145,7 +165,10 @@ class PreacherAssignActivityScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildContent(BuildContext context, PreacherActivityViewModel viewModel) {
+  Widget _buildContent(
+    BuildContext context,
+    PreacherActivityViewModel viewModel,
+  ) {
     if (viewModel.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -164,13 +187,21 @@ class PreacherAssignActivityScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         itemCount: viewModel.availableActivities.length,
         itemBuilder: (context, index) {
-          return _buildActivityCard(context, viewModel, viewModel.availableActivities[index]);
+          return _buildActivityCard(
+            context,
+            viewModel,
+            viewModel.availableActivities[index],
+          );
         },
       ),
     );
   }
 
-  Widget _buildActivityCard(BuildContext context, PreacherActivityViewModel viewModel, Activity activity) {
+  Widget _buildActivityCard(
+    BuildContext context,
+    PreacherActivityViewModel viewModel,
+    Activity activity,
+  ) {
     final isUrgent = activity.urgency == 'Urgent';
 
     return Container(
@@ -205,7 +236,10 @@ class PreacherAssignActivityScreen extends StatelessWidget {
               ),
               if (isUrgent)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.red,
                     borderRadius: BorderRadius.circular(12),
@@ -224,7 +258,11 @@ class PreacherAssignActivityScreen extends StatelessWidget {
           const SizedBox(height: 8),
           Row(
             children: [
-              const Icon(Icons.calendar_today_outlined, size: 16, color: Colors.grey),
+              const Icon(
+                Icons.calendar_today_outlined,
+                size: 16,
+                color: Colors.grey,
+              ),
               const SizedBox(width: 4),
               Text(
                 '${DateFormat('dd MMM yyyy').format(activity.activityDate)}, ${activity.startTime} - ${activity.endTime}',
@@ -235,7 +273,11 @@ class PreacherAssignActivityScreen extends StatelessWidget {
           const SizedBox(height: 4),
           Row(
             children: [
-              const Icon(Icons.location_on_outlined, size: 16, color: Colors.grey),
+              const Icon(
+                Icons.location_on_outlined,
+                size: 16,
+                color: Colors.grey,
+              ),
               const SizedBox(width: 4),
               Expanded(
                 child: Text(
@@ -264,7 +306,8 @@ class PreacherAssignActivityScreen extends StatelessWidget {
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
-                  onPressed: () => _showActivityDetails(context, activity, viewModel),
+                  onPressed:
+                      () => _showActivityDetails(context, activity, viewModel),
                   child: const Text(
                     'View Details',
                     style: TextStyle(
@@ -295,7 +338,11 @@ class PreacherAssignActivityScreen extends StatelessWidget {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text(success ? 'Applied successfully' : 'Failed to apply'),
+                          content: Text(
+                            success
+                                ? 'Applied successfully'
+                                : 'Failed to apply',
+                          ),
                           backgroundColor: success ? Colors.green : Colors.red,
                           behavior: SnackBarBehavior.floating,
                         ),
@@ -319,165 +366,202 @@ class PreacherAssignActivityScreen extends StatelessWidget {
     );
   }
 
-  void _showActivityDetails(BuildContext context, Activity activity, PreacherActivityViewModel viewModel) {
+  void _showActivityDetails(
+    BuildContext context,
+    Activity activity,
+    PreacherActivityViewModel viewModel,
+  ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.7,
-        minChildSize: 0.5,
-        maxChildSize: 0.95,
-        builder: (context, scrollController) => Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(24),
-              topRight: Radius.circular(24),
-            ),
-          ),
-          child: Column(
-            children: [
-              Container(
-                margin: const EdgeInsets.only(top: 12),
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              Expanded(
-                child: ListView(
-                  controller: scrollController,
-                  padding: const EdgeInsets.all(24),
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            activity.title,
-                            style: const TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+      builder:
+          (context) => DraggableScrollableSheet(
+            initialChildSize: 0.7,
+            minChildSize: 0.5,
+            maxChildSize: 0.95,
+            builder:
+                (context, scrollController) => Container(
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(24),
+                      topRight: Radius.circular(24),
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.only(top: 12),
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(2),
                         ),
-                        if (activity.urgency == 'Urgent')
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: Colors.red,
-                              borderRadius: BorderRadius.circular(12),
+                      ),
+                      Expanded(
+                        child: ListView(
+                          controller: scrollController,
+                          padding: const EdgeInsets.all(24),
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    activity.title,
+                                    style: const TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                if (activity.urgency == 'Urgent')
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 6,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.red,
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: const Text(
+                                      'URGENT',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                              ],
                             ),
-                            child: const Text(
-                              'URGENT',
+                            const SizedBox(height: 24),
+                            _buildDetailRow(
+                              Icons.category_outlined,
+                              'Activity Type',
+                              activity.activityType,
+                            ),
+                            const SizedBox(height: 16),
+                            _buildDetailRow(
+                              Icons.calendar_today_outlined,
+                              'Date',
+                              DateFormat(
+                                'EEEE, dd MMMM yyyy',
+                              ).format(activity.activityDate),
+                            ),
+                            const SizedBox(height: 16),
+                            _buildDetailRow(
+                              Icons.access_time_outlined,
+                              'Time',
+                              '${activity.startTime} - ${activity.endTime}',
+                            ),
+                            const SizedBox(height: 16),
+                            _buildDetailRow(
+                              Icons.location_on_outlined,
+                              'Location',
+                              activity.location,
+                            ),
+                            const SizedBox(height: 16),
+                            _buildDetailRow(
+                              Icons.place_outlined,
+                              'Venue',
+                              activity.venue,
+                            ),
+                            const SizedBox(height: 24),
+                            const Text(
+                              'Topic',
                               style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
+                                fontSize: 16,
                                 fontWeight: FontWeight.bold,
+                                color: Colors.black87,
                               ),
                             ),
-                          ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                    _buildDetailRow(Icons.category_outlined, 'Activity Type', activity.activityType),
-                    const SizedBox(height: 16),
-                    _buildDetailRow(Icons.calendar_today_outlined, 'Date', 
-                      DateFormat('EEEE, dd MMMM yyyy').format(activity.activityDate)),
-                    const SizedBox(height: 16),
-                    _buildDetailRow(Icons.access_time_outlined, 'Time', 
-                      '${activity.startTime} - ${activity.endTime}'),
-                    const SizedBox(height: 16),
-                    _buildDetailRow(Icons.location_on_outlined, 'Location', activity.location),
-                    const SizedBox(height: 16),
-                    _buildDetailRow(Icons.place_outlined, 'Venue', activity.venue),
-                    const SizedBox(height: 24),
-                    const Text(
-                      'Topic',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      activity.topic,
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: Colors.grey[700],
-                        height: 1.5,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    const Text(
-                      'Special Requirements',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      activity.specialRequirements.isEmpty 
-                        ? 'None' 
-                        : activity.specialRequirements,
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: Colors.grey[700],
-                        height: 1.5,
-                      ),
-                    ),
-                    const SizedBox(height: 32),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF0066FF),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                        ),
-                        onPressed: () async {
-                          Navigator.pop(context);
-                          final success = await viewModel.applyForActivity(
-                            activity.activityId,
-                            activity.id,
-                            preacherId,
-                            preacherName,
-                          );
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(success ? 'Applied successfully' : 'Failed to apply'),
-                                backgroundColor: success ? Colors.green : Colors.red,
-                                behavior: SnackBarBehavior.floating,
+                            const SizedBox(height: 8),
+                            Text(
+                              activity.topic,
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.grey[700],
+                                height: 1.5,
                               ),
-                            );
-                          }
-                        },
-                        child: const Text(
-                          'Apply for this Activity',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
+                            ),
+                            const SizedBox(height: 24),
+                            const Text(
+                              'Special Requirements',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              activity.specialRequirements.isEmpty
+                                  ? 'None'
+                                  : activity.specialRequirements,
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.grey[700],
+                                height: 1.5,
+                              ),
+                            ),
+                            const SizedBox(height: 32),
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF0066FF),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 16,
+                                  ),
+                                ),
+                                onPressed: () async {
+                                  Navigator.pop(context);
+                                  final success = await viewModel
+                                      .applyForActivity(
+                                        activity.activityId,
+                                        activity.id,
+                                        preacherId,
+                                        preacherName,
+                                      );
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          success
+                                              ? 'Applied successfully'
+                                              : 'Failed to apply',
+                                        ),
+                                        backgroundColor:
+                                            success ? Colors.green : Colors.red,
+                                        behavior: SnackBarBehavior.floating,
+                                      ),
+                                    );
+                                  }
+                                },
+                                child: const Text(
+                                  'Apply for this Activity',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
           ),
-        ),
-      ),
     );
   }
 

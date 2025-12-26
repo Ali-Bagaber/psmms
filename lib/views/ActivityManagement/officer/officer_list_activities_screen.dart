@@ -93,7 +93,10 @@ class OfficerListActivitiesScreen extends StatelessWidget {
           ),
           filled: true,
           fillColor: Colors.white,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 12,
+          ),
         ),
       ),
     );
@@ -105,35 +108,46 @@ class OfficerListActivitiesScreen extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       color: Colors.white,
       child: Row(
-        children: filters.map((filter) {
-          final isSelected = viewModel.statusFilter == filter;
-          return Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: GestureDetector(
-              onTap: () => viewModel.onStatusFilterChanged(filter),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  color: isSelected ? const Color(0xFF0066FF) : const Color(0xFFE5E7EB),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  filter,
-                  style: TextStyle(
-                    color: isSelected ? Colors.white : Colors.black87,
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                    fontSize: 13,
+        children:
+            filters.map((filter) {
+              final isSelected = viewModel.statusFilter == filter;
+              return Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: GestureDetector(
+                  onTap: () => viewModel.onStatusFilterChanged(filter),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color:
+                          isSelected
+                              ? const Color(0xFF0066FF)
+                              : const Color(0xFFE5E7EB),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      filter,
+                      style: TextStyle(
+                        color: isSelected ? Colors.white : Colors.black87,
+                        fontWeight:
+                            isSelected ? FontWeight.w600 : FontWeight.normal,
+                        fontSize: 13,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-          );
-        }).toList(),
+              );
+            }).toList(),
       ),
     );
   }
 
-  Widget _buildContent(BuildContext context, OfficerActivityViewModel viewModel) {
+  Widget _buildContent(
+    BuildContext context,
+    OfficerActivityViewModel viewModel,
+  ) {
     if (viewModel.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -152,13 +166,21 @@ class OfficerListActivitiesScreen extends StatelessWidget {
         padding: const EdgeInsets.only(bottom: 80),
         itemCount: viewModel.activities.length,
         itemBuilder: (context, index) {
-          return _buildActivityCard(context, viewModel, viewModel.activities[index]);
+          return _buildActivityCard(
+            context,
+            viewModel,
+            viewModel.activities[index],
+          );
         },
       ),
     );
   }
 
-  Widget _buildActivityCard(BuildContext context, OfficerActivityViewModel viewModel, Activity activity) {
+  Widget _buildActivityCard(
+    BuildContext context,
+    OfficerActivityViewModel viewModel,
+    Activity activity,
+  ) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.all(16),
@@ -207,7 +229,11 @@ class OfficerListActivitiesScreen extends StatelessWidget {
           const SizedBox(height: 4),
           Row(
             children: [
-              const Icon(Icons.location_on_outlined, size: 16, color: Colors.grey),
+              const Icon(
+                Icons.location_on_outlined,
+                size: 16,
+                color: Colors.grey,
+              ),
               const SizedBox(width: 4),
               Expanded(
                 child: Text(
@@ -220,7 +246,11 @@ class OfficerListActivitiesScreen extends StatelessWidget {
           const SizedBox(height: 4),
           Row(
             children: [
-              const Icon(Icons.calendar_today_outlined, size: 16, color: Colors.grey),
+              const Icon(
+                Icons.calendar_today_outlined,
+                size: 16,
+                color: Colors.grey,
+              ),
               const SizedBox(width: 4),
               Text(
                 DateFormat('dd MMM yyyy, HH:mm').format(activity.activityDate),
@@ -237,7 +267,10 @@ class OfficerListActivitiesScreen extends StatelessWidget {
                   final result = await Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => OfficerViewActivityScreen.withProvider(activity: activity),
+                      builder:
+                          (_) => OfficerViewActivityScreen.withProvider(
+                            activity: activity,
+                          ),
                     ),
                   );
                   if (result == true) {
@@ -256,7 +289,10 @@ class OfficerListActivitiesScreen extends StatelessWidget {
                   final result = await Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => OfficerEditActivityScreen.withProvider(activity: activity),
+                      builder:
+                          (_) => OfficerEditActivityScreen.withProvider(
+                            activity: activity,
+                          ),
                     ),
                   );
                   if (result == true) {
@@ -271,8 +307,13 @@ class OfficerListActivitiesScreen extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               IconButton(
-                onPressed: () => _showDeleteConfirmation(context, viewModel, activity),
-                icon: const Icon(Icons.delete_outline, size: 20, color: Colors.red),
+                onPressed:
+                    () => _showDeleteConfirmation(context, viewModel, activity),
+                icon: const Icon(
+                  Icons.delete_outline,
+                  size: 20,
+                  color: Colors.red,
+                ),
               ),
             ],
           ),
@@ -329,35 +370,49 @@ class OfficerListActivitiesScreen extends StatelessWidget {
     );
   }
 
-  void _showDeleteConfirmation(BuildContext context, OfficerActivityViewModel viewModel, Activity activity) {
+  void _showDeleteConfirmation(
+    BuildContext context,
+    OfficerActivityViewModel viewModel,
+    Activity activity,
+  ) {
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Delete Activity'),
-        content: Text('Are you sure you want to delete "${activity.title}"?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
+      builder:
+          (ctx) => AlertDialog(
+            title: const Text('Delete Activity'),
+            content: Text(
+              'Are you sure you want to delete "${activity.title}"?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  Navigator.pop(ctx);
+                  final success = await viewModel.deleteActivity(activity.id);
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          success
+                              ? 'Activity deleted'
+                              : 'Failed to delete activity',
+                        ),
+                        backgroundColor: success ? Colors.green : Colors.red,
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  }
+                },
+                child: const Text(
+                  'Delete',
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(ctx);
-              final success = await viewModel.deleteActivity(activity.id);
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(success ? 'Activity deleted' : 'Failed to delete activity'),
-                    backgroundColor: success ? Colors.green : Colors.red,
-                    behavior: SnackBarBehavior.floating,
-                  ),
-                );
-              }
-            },
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
     );
   }
 
@@ -366,208 +421,288 @@ class OfficerListActivitiesScreen extends StatelessWidget {
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.7,
-        minChildSize: 0.5,
-        maxChildSize: 0.9,
-        builder: (context, scrollController) => Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(24),
-              topRight: Radius.circular(24),
-            ),
-          ),
-          child: Column(
-            children: [
-              Container(
-                margin: const EdgeInsets.only(top: 12),
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Notifications',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
+      builder:
+          (context) => DraggableScrollableSheet(
+            initialChildSize: 0.7,
+            minChildSize: 0.5,
+            maxChildSize: 0.9,
+            builder:
+                (context, scrollController) => Container(
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(24),
+                      topRight: Radius.circular(24),
                     ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.only(top: 12),
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(2),
+                        ),
                       ),
-                      child: StreamBuilder<QuerySnapshot>(
-                        stream: FirebaseFirestore.instance
-                            .collection('activities')
-                            .where('status', isEqualTo: 'Assigned')
-                            .snapshots(),
-                        builder: (context, assignedSnapshot) {
-                          return StreamBuilder<QuerySnapshot>(
-                            stream: FirebaseFirestore.instance
-                                .collection('activity_submissions')
-                                .where('status', isEqualTo: 'Pending')
-                                .snapshots(),
-                            builder: (context, submissionSnapshot) {
-                              return StreamBuilder<QuerySnapshot>(
-                                stream: FirebaseFirestore.instance
-                                    .collection('payments')
-                                    .where('status', isEqualTo: 'Pending Payment')
-                                    .snapshots(),
-                                builder: (context, paymentSnapshot) {
-                                  final assignedCount = assignedSnapshot.data?.docs.length ?? 0;
-                                  final submissionCount = submissionSnapshot.data?.docs.length ?? 0;
-                                  final paymentCount = paymentSnapshot.data?.docs.length ?? 0;
-                                  final total = assignedCount + submissionCount + paymentCount;
-                                  
-                                  return Text(
-                                    '$total New',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                      Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              'Notifications',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: StreamBuilder<QuerySnapshot>(
+                                stream:
+                                    FirebaseFirestore.instance
+                                        .collection('activities')
+                                        .where('status', isEqualTo: 'Assigned')
+                                        .snapshots(),
+                                builder: (context, assignedSnapshot) {
+                                  return StreamBuilder<QuerySnapshot>(
+                                    stream:
+                                        FirebaseFirestore.instance
+                                            .collection('activity_submissions')
+                                            .where(
+                                              'status',
+                                              isEqualTo: 'Pending',
+                                            )
+                                            .snapshots(),
+                                    builder: (context, submissionSnapshot) {
+                                      return StreamBuilder<QuerySnapshot>(
+                                        stream:
+                                            FirebaseFirestore.instance
+                                                .collection('payments')
+                                                .where(
+                                                  'status',
+                                                  isEqualTo: 'Pending Payment',
+                                                )
+                                                .snapshots(),
+                                        builder: (context, paymentSnapshot) {
+                                          final assignedCount =
+                                              assignedSnapshot
+                                                  .data
+                                                  ?.docs
+                                                  .length ??
+                                              0;
+                                          final submissionCount =
+                                              submissionSnapshot
+                                                  .data
+                                                  ?.docs
+                                                  .length ??
+                                              0;
+                                          final paymentCount =
+                                              paymentSnapshot
+                                                  .data
+                                                  ?.docs
+                                                  .length ??
+                                              0;
+                                          final total =
+                                              assignedCount +
+                                              submissionCount +
+                                              paymentCount;
+
+                                          return Text(
+                                            '$total New',
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          );
+                                        },
+                                      );
+                                    },
                                   );
                                 },
-                              );
-                            },
-                          );
-                        },
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collection('activities')
-                      .where('status', isEqualTo: 'Assigned')
-                      .snapshots(),
-                  builder: (context, assignedSnapshot) {
-                    return StreamBuilder<QuerySnapshot>(
-                      stream: FirebaseFirestore.instance
-                          .collection('activity_submissions')
-                          .where('status', isEqualTo: 'Pending')
-                          .snapshots(),
-                      builder: (context, submissionSnapshot) {
-                        return StreamBuilder<QuerySnapshot>(
-                          stream: FirebaseFirestore.instance
-                              .collection('payments')
-                              .where('status', isEqualTo: 'Pending Payment')
-                              .snapshots(),
-                          builder: (context, paymentSnapshot) {
-                            if (assignedSnapshot.connectionState == ConnectionState.waiting ||
-                                submissionSnapshot.connectionState == ConnectionState.waiting ||
-                                paymentSnapshot.connectionState == ConnectionState.waiting) {
-                              return const Center(child: CircularProgressIndicator());
-                            }
+                      Expanded(
+                        child: StreamBuilder<QuerySnapshot>(
+                          stream:
+                              FirebaseFirestore.instance
+                                  .collection('activities')
+                                  .where('status', isEqualTo: 'Assigned')
+                                  .snapshots(),
+                          builder: (context, assignedSnapshot) {
+                            return StreamBuilder<QuerySnapshot>(
+                              stream:
+                                  FirebaseFirestore.instance
+                                      .collection('activity_submissions')
+                                      .where('status', isEqualTo: 'Pending')
+                                      .snapshots(),
+                              builder: (context, submissionSnapshot) {
+                                return StreamBuilder<QuerySnapshot>(
+                                  stream:
+                                      FirebaseFirestore.instance
+                                          .collection('payments')
+                                          .where(
+                                            'status',
+                                            isEqualTo: 'Pending Payment',
+                                          )
+                                          .snapshots(),
+                                  builder: (context, paymentSnapshot) {
+                                    if (assignedSnapshot.connectionState ==
+                                            ConnectionState.waiting ||
+                                        submissionSnapshot.connectionState ==
+                                            ConnectionState.waiting ||
+                                        paymentSnapshot.connectionState ==
+                                            ConnectionState.waiting) {
+                                      return const Center(
+                                        child: CircularProgressIndicator(),
+                                      );
+                                    }
 
-                            final assigned = assignedSnapshot.data?.docs ?? [];
-                            final submissions = submissionSnapshot.data?.docs ?? [];
-                            final payments = paymentSnapshot.data?.docs ?? [];
+                                    final assigned =
+                                        assignedSnapshot.data?.docs ?? [];
+                                    final submissions =
+                                        submissionSnapshot.data?.docs ?? [];
+                                    final payments =
+                                        paymentSnapshot.data?.docs ?? [];
 
-                            if (assigned.isEmpty && submissions.isEmpty && payments.isEmpty) {
-                              return Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(Icons.notifications_off, size: 64, color: Colors.grey[400]),
-                                    const SizedBox(height: 16),
-                                    Text(
-                                      'No new notifications',
-                                      style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }
+                                    if (assigned.isEmpty &&
+                                        submissions.isEmpty &&
+                                        payments.isEmpty) {
+                                      return Center(
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              Icons.notifications_off,
+                                              size: 64,
+                                              color: Colors.grey[400],
+                                            ),
+                                            const SizedBox(height: 16),
+                                            Text(
+                                              'No new notifications',
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.grey[600],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    }
 
-                            return ListView(
-                              controller: scrollController,
-                              padding: const EdgeInsets.symmetric(horizontal: 16),
-                              children: [
-                                // New Applications (Assigned Activities)
-                                ...assigned.map((doc) {
-                                  final data = doc.data() as Map<String, dynamic>;
-                                  final updatedAt = (data['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now();
-                                  final timeAgo = _getTimeAgo(updatedAt);
-                                  
-                                  return _buildNotificationItem(
-                                    icon: Icons.person_add,
-                                    iconColor: Colors.purple,
-                                    title: 'New Application',
-                                    message: '${data['assignedPreacherName']} applied for ${data['title']}',
-                                    time: timeAgo,
-                                    isUnread: true,
-                                    onTap: () {
-                                      Navigator.pop(context);
-                                      // TODO: Navigate to activity details
-                                    },
-                                  );
-                                }),
-                                // Activity Submissions
-                                ...submissions.map((doc) {
-                                  final data = doc.data() as Map<String, dynamic>;
-                                  final submittedAt = (data['submittedAt'] as Timestamp).toDate();
-                                  final timeAgo = _getTimeAgo(submittedAt);
-                                  
-                                  return _buildNotificationItem(
-                                    icon: Icons.assignment,
-                                    iconColor: Colors.blue,
-                                    title: 'New Evidence Submission',
-                                    message: '${data['preacherName']} submitted evidence for activity',
-                                    time: timeAgo,
-                                    isUnread: true,
-                                    onTap: () {
-                                      Navigator.pop(context);
-                                      // TODO: Navigate to submission details
-                                    },
-                                  );
-                                }),
-                                // Payment Requests
-                                ...payments.map((doc) {
-                                  final data = doc.data() as Map<String, dynamic>;
-                                  final requestDate = (data['requestDate'] as Timestamp).toDate();
-                                  final timeAgo = _getTimeAgo(requestDate);
-                                  
-                                  return _buildNotificationItem(
-                                    icon: Icons.payment,
-                                    iconColor: Colors.green,
-                                    title: 'Payment Request',
-                                    message: '${data['preacherName']} - RM ${data['amount']}',
-                                    time: timeAgo,
-                                    isUnread: true,
-                                    onTap: () {
-                                      Navigator.pop(context);
-                                      // TODO: Navigate to payment details
-                                    },
-                                  );
-                                }),
-                                const SizedBox(height: 20),
-                              ],
+                                    return ListView(
+                                      controller: scrollController,
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                      ),
+                                      children: [
+                                        // New Applications (Assigned Activities)
+                                        ...assigned.map((doc) {
+                                          final data =
+                                              doc.data()
+                                                  as Map<String, dynamic>;
+                                          final updatedAt =
+                                              (data['updatedAt'] as Timestamp?)
+                                                  ?.toDate() ??
+                                              DateTime.now();
+                                          final timeAgo = _getTimeAgo(
+                                            updatedAt,
+                                          );
+
+                                          return _buildNotificationItem(
+                                            icon: Icons.person_add,
+                                            iconColor: Colors.purple,
+                                            title: 'New Application',
+                                            message:
+                                                '${data['assignedPreacherName']} applied for ${data['title']}',
+                                            time: timeAgo,
+                                            isUnread: true,
+                                            onTap: () {
+                                              Navigator.pop(context);
+                                              // TODO: Navigate to activity details
+                                            },
+                                          );
+                                        }),
+                                        // Activity Submissions
+                                        ...submissions.map((doc) {
+                                          final data =
+                                              doc.data()
+                                                  as Map<String, dynamic>;
+                                          final submittedAt =
+                                              (data['submittedAt'] as Timestamp)
+                                                  .toDate();
+                                          final timeAgo = _getTimeAgo(
+                                            submittedAt,
+                                          );
+
+                                          return _buildNotificationItem(
+                                            icon: Icons.assignment,
+                                            iconColor: Colors.blue,
+                                            title: 'New Evidence Submission',
+                                            message:
+                                                '${data['preacherName']} submitted evidence for activity',
+                                            time: timeAgo,
+                                            isUnread: true,
+                                            onTap: () {
+                                              Navigator.pop(context);
+                                              // TODO: Navigate to submission details
+                                            },
+                                          );
+                                        }),
+                                        // Payment Requests
+                                        ...payments.map((doc) {
+                                          final data =
+                                              doc.data()
+                                                  as Map<String, dynamic>;
+                                          final requestDate =
+                                              (data['requestDate'] as Timestamp)
+                                                  .toDate();
+                                          final timeAgo = _getTimeAgo(
+                                            requestDate,
+                                          );
+
+                                          return _buildNotificationItem(
+                                            icon: Icons.payment,
+                                            iconColor: Colors.green,
+                                            title: 'Payment Request',
+                                            message:
+                                                '${data['preacherName']} - RM ${data['amount']}',
+                                            time: timeAgo,
+                                            isUnread: true,
+                                            onTap: () {
+                                              Navigator.pop(context);
+                                              // TODO: Navigate to payment details
+                                            },
+                                          );
+                                        }),
+                                        const SizedBox(height: 20),
+                                      ],
+                                    );
+                                  },
+                                );
+                              },
                             );
                           },
-                        );
-                      },
-                    );
-                  },
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
           ),
-        ),
-      ),
     );
   }
 
@@ -632,7 +767,8 @@ class OfficerListActivitiesScreen extends StatelessWidget {
                           title,
                           style: TextStyle(
                             fontSize: 15,
-                            fontWeight: isUnread ? FontWeight.bold : FontWeight.w600,
+                            fontWeight:
+                                isUnread ? FontWeight.bold : FontWeight.w600,
                           ),
                         ),
                       ),
@@ -650,20 +786,14 @@ class OfficerListActivitiesScreen extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     message,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[600],
-                    ),
+                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
                   Text(
                     time,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey[500],
-                    ),
+                    style: TextStyle(fontSize: 12, color: Colors.grey[500]),
                   ),
                 ],
               ),

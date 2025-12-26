@@ -48,13 +48,18 @@ class OfficerViewActivityScreen extends StatelessWidget {
                 title: 'Activity Details',
                 children: [
                   _buildDetailRow('Title', activity.title),
-                  _buildDetailRow('Date & Time', 
-                    '${DateFormat('dd MMMM yyyy').format(activity.activityDate)}, ${activity.startTime} - ${activity.endTime}'),
+                  _buildDetailRow(
+                    'Date & Time',
+                    '${DateFormat('dd MMMM yyyy').format(activity.activityDate)}, ${activity.startTime} - ${activity.endTime}',
+                  ),
                   _buildDetailRow('Venue', activity.venue),
                   _buildDetailRow('Type', activity.activityType),
                   _buildDetailRow('Topic', activity.topic),
                   if (activity.specialRequirements.isNotEmpty)
-                    _buildDetailRow('Requirements', activity.specialRequirements),
+                    _buildDetailRow(
+                      'Requirements',
+                      activity.specialRequirements,
+                    ),
                 ],
               ),
               const SizedBox(height: 16),
@@ -62,7 +67,10 @@ class OfficerViewActivityScreen extends StatelessWidget {
                 _buildSectionCard(
                   title: 'Preacher Information',
                   children: [
-                    _buildDetailRow('Name', activity.assignedPreacherName ?? ''),
+                    _buildDetailRow(
+                      'Name',
+                      activity.assignedPreacherName ?? '',
+                    ),
                     _buildDetailRow('ID', activity.assignedPreacherId ?? ''),
                   ],
                 ),
@@ -75,7 +83,11 @@ class OfficerViewActivityScreen extends StatelessWidget {
                       return const Center(child: CircularProgressIndicator());
                     }
                     if (snapshot.hasData && snapshot.data != null) {
-                      return _buildSubmissionSection(context, viewModel, snapshot.data!);
+                      return _buildSubmissionSection(
+                        context,
+                        viewModel,
+                        snapshot.data!,
+                      );
                     }
                     return const SizedBox.shrink();
                   },
@@ -153,7 +165,10 @@ class OfficerViewActivityScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionCard({required String title, required List<Widget> children}) {
+  Widget _buildSectionCard({
+    required String title,
+    required List<Widget> children,
+  }) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -172,10 +187,7 @@ class OfficerViewActivityScreen extends StatelessWidget {
         children: [
           Text(
             title,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
           ...children,
@@ -194,20 +206,14 @@ class OfficerViewActivityScreen extends StatelessWidget {
             flex: 2,
             child: Text(
               label,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey.shade600,
-              ),
+              style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
             ),
           ),
           Expanded(
             flex: 3,
             child: Text(
               value,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-              ),
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
             ),
           ),
         ],
@@ -215,14 +221,24 @@ class OfficerViewActivityScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSubmissionSection(BuildContext context, OfficerActivityViewModel viewModel, ActivitySubmission submission) {
+  Widget _buildSubmissionSection(
+    BuildContext context,
+    OfficerActivityViewModel viewModel,
+    ActivitySubmission submission,
+  ) {
     return Column(
       children: [
         _buildSectionCard(
           title: 'Location & Submission',
           children: [
-            _buildDetailRow('GPS', '${submission.latitude.toStringAsFixed(6)}, ${submission.longitude.toStringAsFixed(6)}'),
-            _buildDetailRow('Submitted', DateFormat('dd MMM yyyy, HH:mm').format(submission.submittedAt)),
+            _buildDetailRow(
+              'GPS',
+              '${submission.latitude.toStringAsFixed(6)}, ${submission.longitude.toStringAsFixed(6)}',
+            ),
+            _buildDetailRow(
+              'Submitted',
+              DateFormat('dd MMM yyyy, HH:mm').format(submission.submittedAt),
+            ),
             const SizedBox(height: 12),
             Container(
               height: 200,
@@ -286,7 +302,14 @@ class OfficerViewActivityScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   elevation: 0,
                 ),
-                onPressed: viewModel.isLoading ? null : () => _showRejectDialog(context, viewModel, submission.id),
+                onPressed:
+                    viewModel.isLoading
+                        ? null
+                        : () => _showRejectDialog(
+                          context,
+                          viewModel,
+                          submission.id,
+                        ),
                 child: const Text(
                   'Reject',
                   style: TextStyle(
@@ -308,7 +331,11 @@ class OfficerViewActivityScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   elevation: 0,
                 ),
-                onPressed: viewModel.isLoading ? null : () => _handleApprove(context, viewModel, submission.id),
+                onPressed:
+                    viewModel.isLoading
+                        ? null
+                        : () =>
+                            _handleApprove(context, viewModel, submission.id),
                 child: const Text(
                   'Approve',
                   style: TextStyle(
@@ -325,53 +352,70 @@ class OfficerViewActivityScreen extends StatelessWidget {
     );
   }
 
-  void _showRejectDialog(BuildContext context, OfficerActivityViewModel viewModel, String submissionId) {
+  void _showRejectDialog(
+    BuildContext context,
+    OfficerActivityViewModel viewModel,
+    String submissionId,
+  ) {
     final controller = TextEditingController();
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Reject Submission'),
-        content: TextField(
-          controller: controller,
-          maxLines: 3,
-          decoration: const InputDecoration(
-            hintText: 'Enter reason for rejection',
-            border: OutlineInputBorder(),
+      builder:
+          (ctx) => AlertDialog(
+            title: const Text('Reject Submission'),
+            content: TextField(
+              controller: controller,
+              maxLines: 3,
+              decoration: const InputDecoration(
+                hintText: 'Enter reason for rejection',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  Navigator.pop(ctx);
+                  final success = await viewModel.rejectSubmission(
+                    activity.activityId,
+                    submissionId,
+                    controller.text.trim(),
+                  );
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          success ? 'Submission rejected' : 'Failed to reject',
+                        ),
+                        backgroundColor: success ? Colors.orange : Colors.red,
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                    if (success) Navigator.pop(context, true);
+                  }
+                },
+                child: const Text(
+                  'Reject',
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(ctx);
-              final success = await viewModel.rejectSubmission(
-                activity.activityId,
-                submissionId,
-                controller.text.trim(),
-              );
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(success ? 'Submission rejected' : 'Failed to reject'),
-                    backgroundColor: success ? Colors.orange : Colors.red,
-                    behavior: SnackBarBehavior.floating,
-                  ),
-                );
-                if (success) Navigator.pop(context, true);
-              }
-            },
-            child: const Text('Reject', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
     );
   }
 
-  Future<void> _handleApprove(BuildContext context, OfficerActivityViewModel viewModel, String submissionId) async {
-    final success = await viewModel.approveSubmission(activity.activityId, submissionId);
+  Future<void> _handleApprove(
+    BuildContext context,
+    OfficerActivityViewModel viewModel,
+    String submissionId,
+  ) async {
+    final success = await viewModel.approveSubmission(
+      activity.activityId,
+      submissionId,
+    );
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
