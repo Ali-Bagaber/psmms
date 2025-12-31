@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../models/activity.dart';
 import '../../../models/activity_submission.dart';
 import '../../../viewmodels/preacher_activity_view_model.dart';
@@ -95,7 +96,7 @@ class PreacherViewActivityScreen extends StatelessWidget {
                           Icon(Icons.map, size: 48, color: Colors.grey.shade400),
                           const SizedBox(height: 8),
                           TextButton(
-                            onPressed: () {},
+                            onPressed: _openMap,
                             child: const Text('View on Map'),
                           ),
                         ],
@@ -264,5 +265,12 @@ class PreacherViewActivityScreen extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  Future<void> _openMap() async {
+    final url = Uri.parse('https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(activity.location)}');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    }
   }
 }

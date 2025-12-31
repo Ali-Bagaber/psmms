@@ -200,8 +200,8 @@ class PreacherActivityViewModel extends ChangeNotifier {
       );
       
       if (images.isNotEmpty) {
-        // Limit to 3 photos
-        _selectedImages = images.take(3).toList();
+        // Allow up to 10 photos
+        _selectedImages = images.take(10).toList();
         notifyListeners();
       }
     } catch (error) {
@@ -284,8 +284,8 @@ class PreacherActivityViewModel extends ChangeNotifier {
     required String preacherId,
     required String preacherName,
   }) async {
-    if (_selectedImages.length < 3) {
-      _errorMessage = 'Please upload at least 3 photos';
+    if (_selectedImages.length < 1) {
+      _errorMessage = 'Please upload at least 1 photo';
       notifyListeners();
       return false;
     }

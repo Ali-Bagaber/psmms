@@ -58,7 +58,7 @@ class PreacherListActivitiesScreen extends StatelessWidget {
   }
 
   Widget _buildStatusTabs(PreacherActivityViewModel viewModel) {
-    final statuses = ['Upcoming', 'Pending', 'Approved', 'Rejected'];
+    final statuses = ['Upcoming', 'Assigned', 'Approved', 'Rejected'];
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       color: Colors.white,

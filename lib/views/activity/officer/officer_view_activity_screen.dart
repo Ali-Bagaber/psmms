@@ -94,8 +94,9 @@ class OfficerViewActivityScreen extends StatelessWidget {
 
     switch (status) {
       case 'Available':
-        bgColor = const Color(0xFFE0F2FE);
-        textColor = const Color(0xFF0369A1);
+        displayText = 'Pending';
+        bgColor = const Color(0xFFFEF3C7);
+        textColor = const Color(0xFF92400E);
         break;
       case 'Assigned':
         bgColor = const Color(0xFFFEF3C7);

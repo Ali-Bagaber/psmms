@@ -105,7 +105,7 @@ class PreacherUploadEvidenceScreen extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                'Accepted formats: JPG, PNG. Maximum file size: 5MB',
+                'Accepted formats: JPG, PNG',
                 style: TextStyle(
                   fontSize: 13,
                   color: Colors.grey[600],
@@ -296,10 +296,10 @@ class PreacherUploadEvidenceScreen extends StatelessWidget {
   }
 
   Future<void> _handleSubmit(BuildContext context, PreacherActivityViewModel viewModel) async {
-    if (viewModel.selectedImages.length < 3) {
+    if (viewModel.selectedImages.length < 1) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please upload at least 3 photos'),
+          content: Text('Please upload at least 1 photo'),
           backgroundColor: Colors.orange,
           behavior: SnackBarBehavior.floating,
         ),

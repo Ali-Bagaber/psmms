@@ -19,8 +19,8 @@ class MapLocationPicker extends StatefulWidget {
 
 class _MapLocationPickerState extends State<MapLocationPicker> {
   late GoogleMapController _mapController;
-  LatLng _selectedLocation = const LatLng(3.1390, 101.6869); // Default: Kuala Lumpur
-  String _selectedAddress = 'Kuala Lumpur, Malaysia';
+  LatLng _selectedLocation = const LatLng(3.4918, 103.3976); // Default: Pekan, Malaysia
+  String _selectedAddress = 'Pekan, Malaysia';
   bool _isLoading = false;
   final TextEditingController _searchController = TextEditingController();
 
