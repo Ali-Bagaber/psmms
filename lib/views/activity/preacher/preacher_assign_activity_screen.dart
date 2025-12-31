@@ -14,10 +14,16 @@ class PreacherAssignActivityScreen extends StatelessWidget {
     required this.preacherName,
   });
 
-  static Widget withProvider({required String preacherId, required String preacherName}) {
+  static Widget withProvider({
+    required String preacherId,
+    required String preacherName,
+  }) {
     return ChangeNotifierProvider(
       create: (_) => PreacherActivityViewModel()..loadAvailableActivities(),
-      child: PreacherAssignActivityScreen(preacherId: preacherId, preacherName: preacherName),
+      child: PreacherAssignActivityScreen(
+        preacherId: preacherId,
+        preacherName: preacherName,
+      ),
     );
   }
 
@@ -81,7 +87,10 @@ class PreacherAssignActivityScreen extends StatelessWidget {
           ),
           filled: true,
           fillColor: Colors.white,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 12,
+          ),
         ),
       ),
     );
@@ -127,9 +136,20 @@ class PreacherAssignActivityScreen extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (label == 'Nearest') const Icon(Icons.near_me, size: 16, color: Colors.white),
-            if (label == 'Newest') Icon(Icons.access_time, size: 16, color: isSelected ? Colors.white : Colors.black87),
-            if (label == 'Urgent') Icon(Icons.priority_high, size: 16, color: isSelected ? Colors.white : Colors.black87),
+            if (label == 'Nearest')
+              const Icon(Icons.near_me, size: 16, color: Colors.white),
+            if (label == 'Newest')
+              Icon(
+                Icons.access_time,
+                size: 16,
+                color: isSelected ? Colors.white : Colors.black87,
+              ),
+            if (label == 'Urgent')
+              Icon(
+                Icons.priority_high,
+                size: 16,
+                color: isSelected ? Colors.white : Colors.black87,
+              ),
             const SizedBox(width: 4),
             Text(
               label,
@@ -145,7 +165,10 @@ class PreacherAssignActivityScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildContent(BuildContext context, PreacherActivityViewModel viewModel) {
+  Widget _buildContent(
+    BuildContext context,
+    PreacherActivityViewModel viewModel,
+  ) {
     if (viewModel.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -164,13 +187,21 @@ class PreacherAssignActivityScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         itemCount: viewModel.availableActivities.length,
         itemBuilder: (context, index) {
-          return _buildActivityCard(context, viewModel, viewModel.availableActivities[index]);
+          return _buildActivityCard(
+            context,
+            viewModel,
+            viewModel.availableActivities[index],
+          );
         },
       ),
     );
   }
 
-  Widget _buildActivityCard(BuildContext context, PreacherActivityViewModel viewModel, Activity activity) {
+  Widget _buildActivityCard(
+    BuildContext context,
+    PreacherActivityViewModel viewModel,
+    Activity activity,
+  ) {
     final isUrgent = activity.urgency == 'Urgent';
 
     return Container(
@@ -205,7 +236,10 @@ class PreacherAssignActivityScreen extends StatelessWidget {
               ),
               if (isUrgent)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.red,
                     borderRadius: BorderRadius.circular(12),
@@ -224,7 +258,11 @@ class PreacherAssignActivityScreen extends StatelessWidget {
           const SizedBox(height: 8),
           Row(
             children: [
-              const Icon(Icons.calendar_today_outlined, size: 16, color: Colors.grey),
+              const Icon(
+                Icons.calendar_today_outlined,
+                size: 16,
+                color: Colors.grey,
+              ),
               const SizedBox(width: 4),
               Text(
                 '${DateFormat('dd MMM yyyy').format(activity.activityDate)}, ${activity.startTime} - ${activity.endTime}',
@@ -235,7 +273,11 @@ class PreacherAssignActivityScreen extends StatelessWidget {
           const SizedBox(height: 4),
           Row(
             children: [
-              const Icon(Icons.location_on_outlined, size: 16, color: Colors.grey),
+              const Icon(
+                Icons.location_on_outlined,
+                size: 16,
+                color: Colors.grey,
+              ),
               const SizedBox(width: 4),
               Expanded(
                 child: Text(
@@ -287,7 +329,11 @@ class PreacherAssignActivityScreen extends StatelessWidget {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text(success ? 'Applied successfully' : 'Failed to apply'),
+                          content: Text(
+                            success
+                                ? 'Applied successfully'
+                                : 'Failed to apply',
+                          ),
                           backgroundColor: success ? Colors.green : Colors.red,
                           behavior: SnackBarBehavior.floating,
                         ),
@@ -316,87 +362,127 @@ class PreacherAssignActivityScreen extends StatelessWidget {
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.8,
-        minChildSize: 0.5,
-        maxChildSize: 0.95,
-        builder: (context, scrollController) => Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(24),
-              topRight: Radius.circular(24),
-            ),
-          ),
-          child: Column(
-            children: [
-              Container(
-                margin: const EdgeInsets.only(top: 12),
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              const Padding(
-                padding: EdgeInsets.all(20),
-                child: Text(
-                  'Activity Details',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-              ),
-              Expanded(
-                child: ListView(
-                  controller: scrollController,
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  children: [
-                    _buildDetailRow(Icons.category, 'Activity Type', activity.activityType),
-                    _buildDetailRow(Icons.title, 'Title', activity.title),
-                    _buildDetailRow(Icons.calendar_today, 'Date', DateFormat('dd MMM yyyy').format(activity.activityDate)),
-                    _buildDetailRow(Icons.access_time, 'Time', '${activity.startTime} - ${activity.endTime}'),
-                    _buildDetailRow(Icons.location_on, 'Location', activity.location),
-                    _buildDetailRow(Icons.place, 'Venue', activity.venue),
-                    _buildDetailRow(Icons.topic, 'Topic', activity.topic),
-                    const SizedBox(height: 16),
-                    if (activity.specialRequirements.isNotEmpty) ...[
+      builder:
+          (context) => DraggableScrollableSheet(
+            initialChildSize: 0.8,
+            minChildSize: 0.5,
+            maxChildSize: 0.95,
+            builder:
+                (context, scrollController) => Container(
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(24),
+                      topRight: Radius.circular(24),
+                    ),
+                  ),
+                  child: Column(
+                    children: [
                       Container(
-                        padding: const EdgeInsets.all(12),
+                        margin: const EdgeInsets.only(top: 12),
+                        width: 40,
+                        height: 4,
                         decoration: BoxDecoration(
-                          color: Colors.blue.shade50,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.blue.shade200),
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(2),
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.all(20),
+                        child: Text(
+                          'Activity Details',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: ListView(
+                          controller: scrollController,
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
                           children: [
-                            Row(
-                              children: [
-                                Icon(Icons.info_outline, color: Colors.blue.shade700),
-                                const SizedBox(width: 8),
-                                Text(
-                                  'Special Requirements',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.blue.shade700,
+                            _buildDetailRow(
+                              Icons.category,
+                              'Activity Type',
+                              activity.activityType,
+                            ),
+                            _buildDetailRow(
+                              Icons.title,
+                              'Title',
+                              activity.title,
+                            ),
+                            _buildDetailRow(
+                              Icons.calendar_today,
+                              'Date',
+                              DateFormat(
+                                'dd MMM yyyy',
+                              ).format(activity.activityDate),
+                            ),
+                            _buildDetailRow(
+                              Icons.access_time,
+                              'Time',
+                              '${activity.startTime} - ${activity.endTime}',
+                            ),
+                            _buildDetailRow(
+                              Icons.location_on,
+                              'Location',
+                              activity.location,
+                            ),
+                            _buildDetailRow(
+                              Icons.place,
+                              'Venue',
+                              activity.venue,
+                            ),
+                            _buildDetailRow(
+                              Icons.topic,
+                              'Topic',
+                              activity.topic,
+                            ),
+                            const SizedBox(height: 16),
+                            if (activity.specialRequirements.isNotEmpty) ...[
+                              Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: Colors.blue.shade50,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: Colors.blue.shade200,
                                   ),
                                 ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            Text(activity.specialRequirements),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.info_outline,
+                                          color: Colors.blue.shade700,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          'Special Requirements',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.blue.shade700,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(activity.specialRequirements),
+                                  ],
+                                ),
+                              ),
+                            ],
+                            const SizedBox(height: 24),
                           ],
                         ),
                       ),
                     ],
-                    const SizedBox(height: 24),
-                  ],
+                  ),
                 ),
-              ),
-            ],
           ),
-        ),
-      ),
     );
   }
 
@@ -419,7 +505,10 @@ class PreacherAssignActivityScreen extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   value,
-                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ],
             ),

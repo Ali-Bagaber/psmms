@@ -19,7 +19,10 @@ class MapLocationPicker extends StatefulWidget {
 
 class _MapLocationPickerState extends State<MapLocationPicker> {
   late GoogleMapController _mapController;
-  LatLng _selectedLocation = const LatLng(3.4918, 103.3976); // Default: Pekan, Malaysia
+  LatLng _selectedLocation = const LatLng(
+    3.4918,
+    103.3976,
+  ); // Default: Pekan, Malaysia
   String _selectedAddress = 'Pekan, Malaysia';
   bool _isLoading = false;
   final TextEditingController _searchController = TextEditingController();
@@ -63,23 +66,21 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
 
       Position position = await Geolocator.getCurrentPosition();
       final location = LatLng(position.latitude, position.longitude);
-      
+
       setState(() {
         _selectedLocation = location;
         _isLoading = false;
       });
 
-      _mapController.animateCamera(
-        CameraUpdate.newLatLngZoom(location, 15),
-      );
+      _mapController.animateCamera(CameraUpdate.newLatLngZoom(location, 15));
 
       await _getAddressFromLatLng(location);
     } catch (e) {
       setState(() => _isLoading = false);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error getting location: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error getting location: $e')));
       }
     }
   }
@@ -117,33 +118,34 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
     setState(() => _isLoading = true);
     try {
       List<Location> locations = await locationFromAddress(query);
-      
+
       if (locations.isNotEmpty) {
-        final location = LatLng(locations.first.latitude, locations.first.longitude);
-        
+        final location = LatLng(
+          locations.first.latitude,
+          locations.first.longitude,
+        );
+
         setState(() {
           _selectedLocation = location;
           _selectedAddress = query;
           _isLoading = false;
         });
 
-        _mapController.animateCamera(
-          CameraUpdate.newLatLngZoom(location, 15),
-        );
+        _mapController.animateCamera(CameraUpdate.newLatLngZoom(location, 15));
       } else {
         setState(() => _isLoading = false);
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Location not found')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Location not found')));
         }
       }
     } catch (e) {
       setState(() => _isLoading = false);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error searching location: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error searching location: $e')));
       }
     }
   }
@@ -202,7 +204,7 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
             mapType: MapType.normal,
             zoomControlsEnabled: false,
           ),
-          
+
           // Search bar
           Positioned(
             top: 16,
@@ -251,19 +253,13 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                     const SizedBox(height: 8),
                     Text(
                       _selectedAddress,
-                      style: TextStyle(
-                        color: Colors.grey[700],
-                        fontSize: 14,
-                      ),
+                      style: TextStyle(color: Colors.grey[700], fontSize: 14),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       'Lat: ${_selectedLocation.latitude.toStringAsFixed(6)}, '
                       'Lng: ${_selectedLocation.longitude.toStringAsFixed(6)}',
-                      style: TextStyle(
-                        color: Colors.grey[500],
-                        fontSize: 12,
-                      ),
+                      style: TextStyle(color: Colors.grey[500], fontSize: 12),
                     ),
                   ],
                 ),
@@ -285,32 +281,31 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: _isLoading
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
+              child:
+                  _isLoading
+                      ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                      : const Text(
+                        'Confirm Location',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
                       ),
-                    )
-                  : const Text(
-                      'Confirm Location',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                    ),
             ),
           ),
 
           if (_isLoading)
             Container(
               color: Colors.black26,
-              child: const Center(
-                child: CircularProgressIndicator(),
-              ),
+              child: const Center(child: CircularProgressIndicator()),
             ),
         ],
       ),

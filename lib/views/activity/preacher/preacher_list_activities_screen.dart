@@ -16,10 +16,16 @@ class PreacherListActivitiesScreen extends StatelessWidget {
     required this.preacherName,
   });
 
-  static Widget withProvider({required String preacherId, required String preacherName}) {
+  static Widget withProvider({
+    required String preacherId,
+    required String preacherName,
+  }) {
     return ChangeNotifierProvider(
       create: (_) => PreacherActivityViewModel()..loadMyActivities(preacherId),
-      child: PreacherListActivitiesScreen(preacherId: preacherId, preacherName: preacherName),
+      child: PreacherListActivitiesScreen(
+        preacherId: preacherId,
+        preacherName: preacherName,
+      ),
     );
   }
 
@@ -63,35 +69,46 @@ class PreacherListActivitiesScreen extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       color: Colors.white,
       child: Row(
-        children: statuses.map((status) {
-          final isSelected = viewModel.myActivitiesStatus == status;
-          return Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: GestureDetector(
-              onTap: () => viewModel.onMyActivitiesStatusChanged(status),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  color: isSelected ? const Color(0xFF0066FF) : const Color(0xFFE5E7EB),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  status,
-                  style: TextStyle(
-                    color: isSelected ? Colors.white : Colors.black87,
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                    fontSize: 13,
+        children:
+            statuses.map((status) {
+              final isSelected = viewModel.myActivitiesStatus == status;
+              return Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: GestureDetector(
+                  onTap: () => viewModel.onMyActivitiesStatusChanged(status),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color:
+                          isSelected
+                              ? const Color(0xFF0066FF)
+                              : const Color(0xFFE5E7EB),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      status,
+                      style: TextStyle(
+                        color: isSelected ? Colors.white : Colors.black87,
+                        fontWeight:
+                            isSelected ? FontWeight.w600 : FontWeight.normal,
+                        fontSize: 13,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-          );
-        }).toList(),
+              );
+            }).toList(),
       ),
     );
   }
 
-  Widget _buildContent(BuildContext context, PreacherActivityViewModel viewModel) {
+  Widget _buildContent(
+    BuildContext context,
+    PreacherActivityViewModel viewModel,
+  ) {
     if (viewModel.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -101,7 +118,10 @@ class PreacherListActivitiesScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(viewModel.errorMessage!, style: const TextStyle(color: Colors.red)),
+            Text(
+              viewModel.errorMessage!,
+              style: const TextStyle(color: Colors.red),
+            ),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () => viewModel.loadMyActivities(preacherId),
@@ -140,13 +160,21 @@ class PreacherListActivitiesScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         itemCount: viewModel.myActivities.length,
         itemBuilder: (context, index) {
-          return _buildActivityCard(context, viewModel, viewModel.myActivities[index]);
+          return _buildActivityCard(
+            context,
+            viewModel,
+            viewModel.myActivities[index],
+          );
         },
       ),
     );
   }
 
-  Widget _buildActivityCard(BuildContext context, PreacherActivityViewModel viewModel, Activity activity) {
+  Widget _buildActivityCard(
+    BuildContext context,
+    PreacherActivityViewModel viewModel,
+    Activity activity,
+  ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
@@ -182,7 +210,11 @@ class PreacherListActivitiesScreen extends StatelessWidget {
           const SizedBox(height: 8),
           Row(
             children: [
-              const Icon(Icons.calendar_today_outlined, size: 16, color: Colors.grey),
+              const Icon(
+                Icons.calendar_today_outlined,
+                size: 16,
+                color: Colors.grey,
+              ),
               const SizedBox(width: 4),
               Text(
                 DateFormat('dd MMM yyyy, HH:mm').format(activity.activityDate),
@@ -193,7 +225,11 @@ class PreacherListActivitiesScreen extends StatelessWidget {
           const SizedBox(height: 4),
           Row(
             children: [
-              const Icon(Icons.location_on_outlined, size: 16, color: Colors.grey),
+              const Icon(
+                Icons.location_on_outlined,
+                size: 16,
+                color: Colors.grey,
+              ),
               const SizedBox(width: 4),
               Expanded(
                 child: Text(
@@ -212,14 +248,16 @@ class PreacherListActivitiesScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => PreacherViewActivityScreen.withProvider(activity: activity),
+                      builder:
+                          (_) => PreacherViewActivityScreen.withProvider(
+                            activity: activity,
+                          ),
                     ),
                   );
                 },
                 child: const Text('View Details'),
               ),
-              if (activity.status == 'Assigned')
-                const SizedBox(width: 8),
+              if (activity.status == 'Assigned') const SizedBox(width: 8),
               if (activity.status == 'Assigned')
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -232,11 +270,12 @@ class PreacherListActivitiesScreen extends StatelessWidget {
                     final result = await Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => PreacherUploadEvidenceScreen.withProvider(
-                          activity: activity,
-                          preacherId: preacherId,
-                          preacherName: preacherName,
-                        ),
+                        builder:
+                            (_) => PreacherUploadEvidenceScreen.withProvider(
+                              activity: activity,
+                              preacherId: preacherId,
+                              preacherName: preacherName,
+                            ),
                       ),
                     );
                     if (result == true) {

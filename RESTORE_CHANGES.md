@@ -3,8 +3,9 @@
 ## Status: PARTIAL - Manual Steps Required
 
 ### ✅ COMPLETED Changes:
+
 1. Android Gradle Plugin updated to 8.9.1
-2. Kotlin version updated to 2.1.0  
+2. Kotlin version updated to 2.1.0
 3. Gradle wrapper updated to 8.11.1
 4. NDK disabled in build.gradle.kts
 5. Google Maps API key added: AIzaSyC11ZjVTVJjRVVppyCqV5gtF_B8PKnVj5w
@@ -17,9 +18,11 @@
 ### ⚠️ MISSING - Need Manual Implementation:
 
 #### 1. Enhanced Map Features (map_location_picker.dart)
+
 **Missing**: Category search buttons, zoom controls, current location button, nearby markers
 
 **Add after line 150 (after map widget):**
+
 ```dart
 // Horizontal category buttons
 SingleChildScrollView(
@@ -64,9 +67,11 @@ Future<void> _searchNearbyPlaces(String category) async {
 ```
 
 #### 2. Real-time Notifications (officer_list_activities_screen.dart)
+
 **Missing**: Complete notification system with StreamBuilder
 
 **Replace notification button onPressed:**
+
 ```dart
 IconButton(
   icon: const Icon(Icons.notifications_outlined, color: Colors.black),
@@ -152,7 +157,7 @@ void _showNotifications(BuildContext context) {
                           final assigned = assignedSnapshot.data?.docs ?? [];
                           final submissions = submissionSnapshot.data?.docs ?? [];
                           final payments = paymentSnapshot.data?.docs ?? [];
-                          
+
                           if (assigned.isEmpty && submissions.isEmpty && payments.isEmpty) {
                             return Center(
                               child: Column(
@@ -165,7 +170,7 @@ void _showNotifications(BuildContext context) {
                               ),
                             );
                           }
-                          
+
                           return ListView(
                             controller: scrollController,
                             padding: EdgeInsets.symmetric(horizontal: 16),
@@ -299,9 +304,11 @@ Widget _buildNotificationItem({
 **Add import**: `import 'package:cloud_firestore/cloud_firestore.dart';`
 
 #### 3. View Details Button (preacher_assign_activity_screen.dart)
+
 **Missing**: View Details button with DraggableScrollableSheet
 
-**In _buildActivityCard, replace the Apply button with two buttons:**
+**In \_buildActivityCard, replace the Apply button with two buttons:**
+
 ```dart
 Row(
   children: [
@@ -453,13 +460,17 @@ Widget _buildDetailRow(IconData icon, String label, String value) {
 ```
 
 #### 4. Change Tab Label (preacher_list_activities_screen.dart)
+
 **Line 61**: Change `'Pending'` to `'Assigned'`
+
 ```dart
 final statuses = ['Upcoming', 'Assigned', 'Approved', 'Rejected'];
 ```
 
 #### 5. Status Badge Changes (officer_list_activities_screen.dart & officer_view_activity_screen.dart)
-**In _buildStatusBadge method, update the 'Available' case:**
+
+**In \_buildStatusBadge method, update the 'Available' case:**
+
 ```dart
 case 'Available':
   status = 'Pending';
@@ -469,11 +480,13 @@ case 'Available':
 ```
 
 #### 6. View on Map Button (preacher_view_activity_screen.dart)
+
 **Missing**: url_launcher implementation
 
 **Add import:** `import 'package:url_launcher/url_launcher.dart';`
 
 **Add method:**
+
 ```dart
 Future<void> _openMap() async {
   final lat = activity.location.split(',')[0]; // Parse from stored location
@@ -492,6 +505,7 @@ Future<void> _openMap() async {
 ```
 
 **Add button in UI:**
+
 ```dart
 OutlinedButton.icon(
   onPressed: _openMap,
@@ -504,14 +518,16 @@ OutlinedButton.icon(
 ```
 
 ## Next Steps:
+
 1. Run `flutter pub get` to install url_launcher
 2. Manually add the code sections above to their respective files
 3. Run `flutter clean` then `flutter run`
 4. Test all features: maps, notifications, upload, view details, status labels
 
 ## Files Requiring Manual Edits:
+
 - lib/views/activity/widgets/map_location_picker.dart
-- lib/views/activity/officer/officer_list_activities_screen.dart  
+- lib/views/activity/officer/officer_list_activities_screen.dart
 - lib/views/activity/officer/officer_view_activity_screen.dart
 - lib/views/activity/preacher/preacher_assign_activity_screen.dart
 - lib/views/activity/preacher/preacher_list_activities_screen.dart

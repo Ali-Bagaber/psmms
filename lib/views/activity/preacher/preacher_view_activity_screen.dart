@@ -70,10 +70,7 @@ class PreacherViewActivityScreen extends StatelessWidget {
               _buildInfoCard(
                 title: 'Topic',
                 children: [
-                  Text(
-                    activity.topic,
-                    style: const TextStyle(fontSize: 15),
-                  ),
+                  Text(activity.topic, style: const TextStyle(fontSize: 15)),
                 ],
               ),
               const SizedBox(height: 16),
@@ -93,7 +90,11 @@ class PreacherViewActivityScreen extends StatelessWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.map, size: 48, color: Colors.grey.shade400),
+                          Icon(
+                            Icons.map,
+                            size: 48,
+                            color: Colors.grey.shade400,
+                          ),
                           const SizedBox(height: 8),
                           TextButton(
                             onPressed: _openMap,
@@ -184,7 +185,10 @@ class PreacherViewActivityScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoCard({required String title, required List<Widget> children}) {
+  Widget _buildInfoCard({
+    required String title,
+    required List<Widget> children,
+  }) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -203,10 +207,7 @@ class PreacherViewActivityScreen extends StatelessWidget {
         children: [
           Text(
             title,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
           ...children,
@@ -222,12 +223,7 @@ class PreacherViewActivityScreen extends StatelessWidget {
         children: [
           Icon(icon, size: 20, color: Colors.grey),
           const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              text,
-              style: const TextStyle(fontSize: 15),
-            ),
-          ),
+          Expanded(child: Text(text, style: const TextStyle(fontSize: 15))),
         ],
       ),
     );
@@ -268,7 +264,9 @@ class PreacherViewActivityScreen extends StatelessWidget {
   }
 
   Future<void> _openMap() async {
-    final url = Uri.parse('https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(activity.location)}');
+    final url = Uri.parse(
+      'https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(activity.location)}',
+    );
     if (await canLaunchUrl(url)) {
       await launchUrl(url, mode: LaunchMode.externalApplication);
     }
