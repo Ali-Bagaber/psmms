@@ -68,39 +68,42 @@ class PreacherListActivitiesScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       color: Colors.white,
-      child: Row(
-        children:
-            statuses.map((status) {
-              final isSelected = viewModel.myActivitiesStatus == status;
-              return Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: GestureDetector(
-                  onTap: () => viewModel.onMyActivitiesStatusChanged(status),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color:
-                          isSelected
-                              ? const Color(0xFF0066FF)
-                              : const Color(0xFFE5E7EB),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      status,
-                      style: TextStyle(
-                        color: isSelected ? Colors.white : Colors.black87,
-                        fontWeight:
-                            isSelected ? FontWeight.w600 : FontWeight.normal,
-                        fontSize: 13,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children:
+              statuses.map((status) {
+                final isSelected = viewModel.myActivitiesStatus == status;
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: GestureDetector(
+                    onTap: () => viewModel.onMyActivitiesStatusChanged(status),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color:
+                            isSelected
+                                ? const Color(0xFF0066FF)
+                                : const Color(0xFFE5E7EB),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        status,
+                        style: TextStyle(
+                          color: isSelected ? Colors.white : Colors.black87,
+                          fontWeight:
+                              isSelected ? FontWeight.w600 : FontWeight.normal,
+                          fontSize: 13,
+                        ),
                       ),
                     ),
                   ),
-                ),
-              );
-            }).toList(),
+                );
+              }).toList(),
+        ),
       ),
     );
   }

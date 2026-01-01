@@ -198,23 +198,23 @@ class PreacherUploadEvidenceScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
               ],
-              if (viewModel.selectedImages.length < 3) ...[
+              if (viewModel.selectedImages.isEmpty) ...[
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.orange.shade50,
+                    color: Colors.blue.shade50,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.orange.shade200),
+                    border: Border.all(color: Colors.blue.shade200),
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.warning_amber, color: Colors.orange.shade700),
+                      Icon(Icons.info_outline, color: Colors.blue.shade700),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          'Upload failed for 1 photo. Please try again.',
+                          'Please select at least 1 photo to upload evidence.',
                           style: TextStyle(
-                            color: Colors.orange.shade700,
+                            color: Colors.blue.shade700,
                             fontSize: 13,
                           ),
                         ),
@@ -236,7 +236,7 @@ class PreacherUploadEvidenceScreen extends StatelessWidget {
                     ),
                   ),
                   onPressed:
-                      (viewModel.selectedImages.length >= 3 &&
+                      (viewModel.selectedImages.length >= 1 &&
                               !viewModel.isLoading)
                           ? () => _handleSubmit(context, viewModel)
                           : null,

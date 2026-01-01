@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../models/activity.dart';
 import '../../../viewmodels/preacher_activity_view_model.dart';
 
@@ -46,9 +47,61 @@ class PreacherAssignActivityScreen extends StatelessWidget {
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_outlined, color: Colors.black),
-            onPressed: () {},
+          Stack(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.notifications_outlined, color: Colors.black),
+                onPressed: () => _showNotifications(context),
+              ),
+              Positioned(
+                right: 8,
+                top: 8,
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('activities')
+                      .where('assignedPreacherId', isEqualTo: preacherId)
+                      .where('status', isEqualTo: 'Assigned')
+                      .snapshots(),
+                  builder: (context, assignedSnapshot) {
+                    return StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('activity_submissions')
+                          .where('preacherId', isEqualTo: preacherId)
+                          .where('status', whereIn: ['Approved', 'Rejected'])
+                          .snapshots(),
+                      builder: (context, reviewSnapshot) {
+                        final assignedCount = assignedSnapshot.data?.docs.length ?? 0;
+                        final reviewCount = reviewSnapshot.data?.docs.length ?? 0;
+                        final total = assignedCount + reviewCount;
+                        
+                        if (total == 0) return const SizedBox.shrink();
+                        
+                        return Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: const BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                          ),
+                          constraints: const BoxConstraints(
+                            minWidth: 16,
+                            minHeight: 16,
+                          ),
+                          child: Text(
+                            total > 9 ? '9+' : '$total',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -514,6 +567,275 @@ class PreacherAssignActivityScreen extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showNotifications(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.7,
+        minChildSize: 0.5,
+        maxChildSize: 0.9,
+        builder: (context, scrollController) => Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(24),
+              topRight: Radius.circular(24),
+            ),
+          ),
+          child: Column(
+            children: [
+              Container(
+                margin: const EdgeInsets.only(top: 12),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Notifications',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text(
+                            'Clear All',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.blue,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: StreamBuilder<QuerySnapshot>(
+                            stream: FirebaseFirestore.instance
+                                .collection('activities')
+                                .where('assignedPreacherId', isEqualTo: preacherId)
+                                .where('status', isEqualTo: 'Assigned')
+                                .snapshots(),
+                            builder: (context, assignedSnapshot) {
+                              return StreamBuilder<QuerySnapshot>(
+                                stream: FirebaseFirestore.instance
+                                    .collection('activity_submissions')
+                                    .where('preacherId', isEqualTo: preacherId)
+                                    .where('status', whereIn: ['Approved', 'Rejected'])
+                                    .snapshots(),
+                                builder: (context, reviewSnapshot) {
+                                  final assignedCount = assignedSnapshot.data?.docs.length ?? 0;
+                                  final reviewCount = reviewSnapshot.data?.docs.length ?? 0;
+                                  final total = assignedCount + reviewCount;
+                                  
+                                  return Text(
+                                    '$total New',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('activities')
+                      .where('assignedPreacherId', isEqualTo: preacherId)
+                      .where('status', isEqualTo: 'Assigned')
+                      .snapshots(),
+                  builder: (context, assignedSnapshot) {
+                    return StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('activity_submissions')
+                          .where('preacherId', isEqualTo: preacherId)
+                          .where('status', whereIn: ['Approved', 'Rejected'])
+                          .snapshots(),
+                      builder: (context, reviewSnapshot) {
+                        if (assignedSnapshot.connectionState == ConnectionState.waiting ||
+                            reviewSnapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(child: CircularProgressIndicator());
+                        }
+
+                        final assigned = assignedSnapshot.data?.docs ?? [];
+                        final reviewed = reviewSnapshot.data?.docs ?? [];
+
+                        if (assigned.isEmpty && reviewed.isEmpty) {
+                          return Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.notifications_off, size: 64, color: Colors.grey[400]),
+                                const SizedBox(height: 16),
+                                Text(
+                                  'No new notifications',
+                                  style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+
+                        return ListView(
+                          controller: scrollController,
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          children: [
+                            ...assigned.map((doc) {
+                              final data = doc.data() as Map<String, dynamic>;
+                              final updatedAt = (data['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now();
+                              final timeAgo = _getTimeAgo(updatedAt);
+                              
+                              return _buildNotificationItem(
+                                icon: Icons.check_circle,
+                                iconColor: Colors.green,
+                                title: 'Activity Assigned',
+                                message: 'You have been assigned to "${data['title']}"',
+                                time: timeAgo,
+                                isUnread: true,
+                                onTap: () => Navigator.pop(context),
+                              );
+                            }),
+                            ...reviewed.map((doc) {
+                              final data = doc.data() as Map<String, dynamic>;
+                              final reviewedAt = (data['reviewedAt'] as Timestamp?)?.toDate() ?? DateTime.now();
+                              final timeAgo = _getTimeAgo(reviewedAt);
+                              final status = data['status'] as String;
+                              
+                              return _buildNotificationItem(
+                                icon: status == 'Approved' ? Icons.check_circle : Icons.cancel,
+                                iconColor: status == 'Approved' ? Colors.green : Colors.red,
+                                title: 'Evidence ${status}',
+                                message: 'Your evidence submission has been ${status.toLowerCase()}',
+                                time: timeAgo,
+                                isUnread: true,
+                                onTap: () => Navigator.pop(context),
+                              );
+                            }),
+                            const SizedBox(height: 20),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _getTimeAgo(DateTime dateTime) {
+    final now = DateTime.now();
+    final difference = now.difference(dateTime);
+
+    if (difference.inMinutes < 1) {
+      return 'Just now';
+    } else if (difference.inMinutes < 60) {
+      return '${difference.inMinutes} min ago';
+    } else if (difference.inHours < 24) {
+      return '${difference.inHours} hour${difference.inHours > 1 ? 's' : ''} ago';
+    } else if (difference.inDays < 7) {
+      return '${difference.inDays} day${difference.inDays > 1 ? 's' : ''} ago';
+    } else {
+      return DateFormat('MMM d').format(dateTime);
+    }
+  }
+
+  Widget _buildNotificationItem({
+    required IconData icon,
+    required Color iconColor,
+    required String title,
+    required String message,
+    required String time,
+    required bool isUnread,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        margin: const EdgeInsets.only(bottom: 8),
+        decoration: BoxDecoration(
+          color: isUnread ? Colors.blue.shade50 : Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey.shade200),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: iconColor.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: iconColor, size: 24),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    message,
+                    style: TextStyle(color: Colors.grey[600], fontSize: 13),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    time,
+                    style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                  ),
+                ],
+              ),
+            ),
+            if (isUnread)
+              Container(
+                width: 8,
+                height: 8,
+                decoration: const BoxDecoration(
+                  color: Colors.blue,
+                  shape: BoxShape.circle,
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

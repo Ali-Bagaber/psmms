@@ -37,9 +37,74 @@ class OfficerListActivitiesScreen extends StatelessWidget {
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_outlined, color: Colors.black),
-            onPressed: () => _showNotifications(context),
+          Stack(
+            children: [
+              IconButton(
+                icon: const Icon(
+                  Icons.notifications_outlined,
+                  color: Colors.black,
+                ),
+                onPressed: () => _showNotifications(context),
+              ),
+              Positioned(
+                right: 8,
+                top: 8,
+                child: StreamBuilder<QuerySnapshot>(
+                  stream:
+                      FirebaseFirestore.instance
+                          .collection('activities')
+                          .where('status', isEqualTo: 'Assigned')
+                          .snapshots(),
+                  builder: (context, assignedSnapshot) {
+                    return StreamBuilder<QuerySnapshot>(
+                      stream:
+                          FirebaseFirestore.instance
+                              .collection('activity_submissions')
+                              .where('status', isEqualTo: 'Pending')
+                              .snapshots(),
+                      builder: (context, submissionSnapshot) {
+                        return StreamBuilder<QuerySnapshot>(
+                          stream:
+                              FirebaseFirestore.instance
+                                  .collection('payments')
+                                  .where('status', isEqualTo: 'Pending Payment')
+                                  .snapshots(),
+                          builder: (context, paymentSnapshot) {
+                            final total =
+                                (assignedSnapshot.data?.docs.length ?? 0) +
+                                (submissionSnapshot.data?.docs.length ?? 0) +
+                                (paymentSnapshot.data?.docs.length ?? 0);
+
+                            if (total == 0) return const SizedBox.shrink();
+
+                            return Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: const BoxDecoration(
+                                color: Colors.red,
+                                shape: BoxShape.circle,
+                              ),
+                              constraints: const BoxConstraints(
+                                minWidth: 16,
+                                minHeight: 16,
+                              ),
+                              child: Text(
+                                total > 9 ? '9+' : '$total',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -103,7 +168,7 @@ class OfficerListActivitiesScreen extends StatelessWidget {
   }
 
   Widget _buildFilterTabs(OfficerActivityViewModel viewModel) {
-    final filters = ['All', 'Pending', 'Approved', 'Rejected'];
+    final filters = ['All', 'Assigned', 'Approved', 'Rejected'];
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       color: Colors.white,
@@ -458,79 +523,105 @@ class OfficerListActivitiesScreen extends StatelessWidget {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 6,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.red,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: StreamBuilder<QuerySnapshot>(
-                                stream:
-                                    FirebaseFirestore.instance
-                                        .collection('activities')
-                                        .where('status', isEqualTo: 'Assigned')
-                                        .snapshots(),
-                                builder: (context, assignedSnapshot) {
-                                  return StreamBuilder<QuerySnapshot>(
+                            Row(
+                              children: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text(
+                                    'Clear All',
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 6,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.red,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: StreamBuilder<QuerySnapshot>(
                                     stream:
                                         FirebaseFirestore.instance
-                                            .collection('activity_submissions')
+                                            .collection('activities')
                                             .where(
                                               'status',
-                                              isEqualTo: 'Pending',
+                                              isEqualTo: 'Assigned',
                                             )
                                             .snapshots(),
-                                    builder: (context, submissionSnapshot) {
+                                    builder: (context, assignedSnapshot) {
                                       return StreamBuilder<QuerySnapshot>(
                                         stream:
                                             FirebaseFirestore.instance
-                                                .collection('payments')
+                                                .collection(
+                                                  'activity_submissions',
+                                                )
                                                 .where(
                                                   'status',
-                                                  isEqualTo: 'Pending Payment',
+                                                  isEqualTo: 'Pending',
                                                 )
                                                 .snapshots(),
-                                        builder: (context, paymentSnapshot) {
-                                          final assignedCount =
-                                              assignedSnapshot
-                                                  .data
-                                                  ?.docs
-                                                  .length ??
-                                              0;
-                                          final submissionCount =
-                                              submissionSnapshot
-                                                  .data
-                                                  ?.docs
-                                                  .length ??
-                                              0;
-                                          final paymentCount =
-                                              paymentSnapshot
-                                                  .data
-                                                  ?.docs
-                                                  .length ??
-                                              0;
-                                          final total =
-                                              assignedCount +
-                                              submissionCount +
-                                              paymentCount;
+                                        builder: (context, submissionSnapshot) {
+                                          return StreamBuilder<QuerySnapshot>(
+                                            stream:
+                                                FirebaseFirestore.instance
+                                                    .collection('payments')
+                                                    .where(
+                                                      'status',
+                                                      isEqualTo:
+                                                          'Pending Payment',
+                                                    )
+                                                    .snapshots(),
+                                            builder: (
+                                              context,
+                                              paymentSnapshot,
+                                            ) {
+                                              final assignedCount =
+                                                  assignedSnapshot
+                                                      .data
+                                                      ?.docs
+                                                      .length ??
+                                                  0;
+                                              final submissionCount =
+                                                  submissionSnapshot
+                                                      .data
+                                                      ?.docs
+                                                      .length ??
+                                                  0;
+                                              final paymentCount =
+                                                  paymentSnapshot
+                                                      .data
+                                                      ?.docs
+                                                      .length ??
+                                                  0;
+                                              final total =
+                                                  assignedCount +
+                                                  submissionCount +
+                                                  paymentCount;
 
-                                          return Text(
-                                            '$total New',
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.bold,
-                                            ),
+                                              return Text(
+                                                '$total New',
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              );
+                                            },
                                           );
                                         },
                                       );
                                     },
-                                  );
-                                },
-                              ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),

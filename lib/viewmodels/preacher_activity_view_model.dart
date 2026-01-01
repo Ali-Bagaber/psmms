@@ -286,11 +286,17 @@ class PreacherActivityViewModel extends ChangeNotifier {
           'activity_submissions/$activityId/$fileName',
         );
 
-        await ref.putFile(file);
+        print('Uploading image $i: ${file.path}');
+        final uploadTask = await ref.putFile(file);
+        print('Upload complete for image $i, getting URL...');
         final url = await ref.getDownloadURL();
+        print('Got URL for image $i: $url');
         photoUrls.add(url);
       } catch (error) {
-        print('Failed to upload image $i: $error');
+        print('ERROR: Failed to upload image $i: $error');
+        print('ERROR TYPE: ${error.runtimeType}');
+        // Store the error message for user feedback
+        _errorMessage = 'Upload error: ${error.toString()}';
       }
     }
 

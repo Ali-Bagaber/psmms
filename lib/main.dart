@@ -10,12 +10,13 @@ import 'views/payment/preacher_payment_history_screen.dart';
 import 'views/activity/officer/officer_list_activities_screen.dart';
 import 'views/activity/preacher/preacher_assign_activity_screen.dart';
 import 'views/activity/preacher/preacher_list_activities_screen.dart';
+import 'views/dashboard/officer_dashboard_screen.dart';
+import 'views/dashboard/preacher_dashboard_screen.dart';
+import 'views/dashboard/admin_dashboard_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const PsmmsApp());
 }
 
@@ -26,6 +27,7 @@ class PsmmsApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'PSMMS',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF0066FF)),
         useMaterial3: true,
@@ -45,12 +47,37 @@ class MainMenuScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('PSMMS Modules'),
-      ),
+      appBar: AppBar(title: const Text('PSMMS Modules')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          _buildSectionHeader('Dashboards'),
+          _buildModuleCard(
+            context,
+            title: 'Officer Dashboard',
+            subtitle: 'Pending approvals and activity management',
+            icon: Icons.dashboard,
+            builder: (_) => const OfficerDashboardScreen(),
+          ),
+          _buildModuleCard(
+            context,
+            title: 'Preacher Dashboard',
+            subtitle: 'KPI summary and my activities',
+            icon: Icons.dashboard_outlined,
+            builder:
+                (_) => const PreacherDashboardScreen(
+                  preacherId: 'PREACHER-001',
+                  preacherName: 'Imam Hassan',
+                ),
+          ),
+          _buildModuleCard(
+            context,
+            title: 'Admin Dashboard',
+            subtitle: 'Overall statistics and management',
+            icon: Icons.admin_panel_settings,
+            builder: (_) => const AdminDashboardScreen(),
+          ),
+          const SizedBox(height: 24),
           _buildSectionHeader('Payment Management'),
           _buildModuleCard(
             context,
@@ -62,7 +89,8 @@ class MainMenuScreen extends StatelessWidget {
           _buildModuleCard(
             context,
             title: 'Payment Form',
-            subtitle: 'Prepare payment requests for completed preacher activities.',
+            subtitle:
+                'Prepare payment requests for completed preacher activities.',
             icon: Icons.edit_document,
             builder: (_) => const PaymentFormScreen(),
           ),
@@ -85,7 +113,10 @@ class MainMenuScreen extends StatelessWidget {
             title: 'Preacher Payment History',
             subtitle: 'View payment history for a specific preacher.',
             icon: Icons.person_search,
-            builder: (_) => PreacherPaymentHistoryScreen.withProvider(preacherId: 'PREACHER-001'),
+            builder:
+                (_) => PreacherPaymentHistoryScreen.withProvider(
+                  preacherId: 'PREACHER-001',
+                ),
           ),
           const SizedBox(height: 24),
           _buildSectionHeader('Activity Management - Officer'),
@@ -103,20 +134,22 @@ class MainMenuScreen extends StatelessWidget {
             title: 'Available Activities',
             subtitle: 'Browse and apply for available activities.',
             icon: Icons.event_available,
-            builder: (_) => PreacherAssignActivityScreen.withProvider(
-              preacherId: 'PREACHER-001',
-              preacherName: 'Ahmad bin Ali',
-            ),
+            builder:
+                (_) => PreacherAssignActivityScreen.withProvider(
+                  preacherId: 'PREACHER-001',
+                  preacherName: 'Ahmad bin Ali',
+                ),
           ),
           _buildModuleCard(
             context,
             title: 'My Activities',
             subtitle: 'View assigned activities and submit evidence.',
             icon: Icons.assignment_ind,
-            builder: (_) => PreacherListActivitiesScreen.withProvider(
-              preacherId: 'PREACHER-001',
-              preacherName: 'Ahmad bin Ali',
-            ),
+            builder:
+                (_) => PreacherListActivitiesScreen.withProvider(
+                  preacherId: 'PREACHER-001',
+                  preacherName: 'Ahmad bin Ali',
+                ),
           ),
           const SizedBox(height: 24),
           _buildSectionHeader('Development Tools'),
@@ -170,9 +203,7 @@ class MainMenuScreen extends StatelessWidget {
         subtitle: Text(subtitle, style: const TextStyle(fontSize: 13)),
         trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 18),
         onTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: builder),
-          );
+          Navigator.of(context).push(MaterialPageRoute(builder: builder));
         },
       ),
     );
@@ -185,14 +216,9 @@ class ActivitySeederPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Activity Seeder'),
-      ),
+      appBar: AppBar(title: const Text('Activity Seeder')),
       body: const SafeArea(
-        child: Padding(
-          padding: EdgeInsets.all(16),
-          child: ActivitySeeder(),
-        ),
+        child: Padding(padding: EdgeInsets.all(16), child: ActivitySeeder()),
       ),
     );
   }

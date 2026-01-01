@@ -26,12 +26,14 @@ class OfficerActivityViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final snapshot = await _db
-          .collection('activities')
-          .orderBy('createdAt', descending: true)
-          .get();
+      final snapshot =
+          await _db
+              .collection('activities')
+              .orderBy('createdAt', descending: true)
+              .get();
 
-      _activities = snapshot.docs.map((doc) => Activity.fromFirestore(doc)).toList();
+      _activities =
+          snapshot.docs.map((doc) => Activity.fromFirestore(doc)).toList();
       _applyFilters();
       _isLoading = false;
       notifyListeners();
@@ -58,8 +60,8 @@ class OfficerActivityViewModel extends ChangeNotifier {
 
     // Apply status filter
     if (_statusFilter != 'All') {
-      if (_statusFilter == 'Pending') {
-        result = result.where((a) => a.status == 'Submitted').toList();
+      if (_statusFilter == 'Assigned') {
+        result = result.where((a) => a.status == 'Assigned').toList();
       } else if (_statusFilter == 'Approved') {
         result = result.where((a) => a.status == 'Approved').toList();
       } else if (_statusFilter == 'Rejected') {
@@ -70,11 +72,16 @@ class OfficerActivityViewModel extends ChangeNotifier {
     // Apply search filter
     if (_searchQuery.isNotEmpty) {
       final query = _searchQuery.toLowerCase();
-      result = result.where((a) =>
-        a.title.toLowerCase().contains(query) ||
-        a.location.toLowerCase().contains(query) ||
-        (a.assignedPreacherName?.toLowerCase().contains(query) ?? false)
-      ).toList();
+      result =
+          result
+              .where(
+                (a) =>
+                    a.title.toLowerCase().contains(query) ||
+                    a.location.toLowerCase().contains(query) ||
+                    (a.assignedPreacherName?.toLowerCase().contains(query) ??
+                        false),
+              )
+              .toList();
     }
 
     _filteredActivities = result;
@@ -84,17 +91,19 @@ class OfficerActivityViewModel extends ChangeNotifier {
   // Generate unique activity ID
   Future<String> _generateActivityId() async {
     final year = DateTime.now().year;
-    final snapshot = await _db
-        .collection('activities')
-        .where('activityId', isGreaterThanOrEqualTo: 'ACT-$year-')
-        .where('activityId', isLessThan: 'ACT-${year + 1}-')
-        .orderBy('activityId', descending: true)
-        .limit(1)
-        .get();
+    final snapshot =
+        await _db
+            .collection('activities')
+            .where('activityId', isGreaterThanOrEqualTo: 'ACT-$year-')
+            .where('activityId', isLessThan: 'ACT-${year + 1}-')
+            .orderBy('activityId', descending: true)
+            .limit(1)
+            .get();
 
     int sequence = 1;
     if (snapshot.docs.isNotEmpty) {
-      final lastActivityId = snapshot.docs.first.data()['activityId'] as String?;
+      final lastActivityId =
+          snapshot.docs.first.data()['activityId'] as String?;
       if (lastActivityId != null) {
         final parts = lastActivityId.split('-');
         if (parts.length == 3) {
@@ -220,11 +229,12 @@ class OfficerActivityViewModel extends ChangeNotifier {
   // Get activity submission
   Future<ActivitySubmission?> getActivitySubmission(String activityId) async {
     try {
-      final snapshot = await _db
-          .collection('activity_submissions')
-          .where('activityId', isEqualTo: activityId)
-          .limit(1)
-          .get();
+      final snapshot =
+          await _db
+              .collection('activity_submissions')
+              .where('activityId', isEqualTo: activityId)
+              .limit(1)
+              .get();
 
       if (snapshot.docs.isNotEmpty) {
         return ActivitySubmission.fromFirestore(snapshot.docs.first);
@@ -247,28 +257,23 @@ class OfficerActivityViewModel extends ChangeNotifier {
       final batch = _db.batch();
 
       // Update submission status
-      batch.update(
-        _db.collection('activity_submissions').doc(submissionId),
-        {
-          'status': 'Approved',
-          'reviewedAt': FieldValue.serverTimestamp(),
-        },
-      );
+      batch.update(_db.collection('activity_submissions').doc(submissionId), {
+        'status': 'Approved',
+        'reviewedAt': FieldValue.serverTimestamp(),
+      });
 
       // Update activity status
-      final activityQuery = await _db
-          .collection('activities')
-          .where('activityId', isEqualTo: activityId)
-          .limit(1)
-          .get();
+      final activityQuery =
+          await _db
+              .collection('activities')
+              .where('activityId', isEqualTo: activityId)
+              .limit(1)
+              .get();
 
       if (activityQuery.docs.isNotEmpty) {
         batch.update(
           _db.collection('activities').doc(activityQuery.docs.first.id),
-          {
-            'status': 'Approved',
-            'updatedAt': FieldValue.serverTimestamp(),
-          },
+          {'status': 'Approved', 'updatedAt': FieldValue.serverTimestamp()},
         );
       }
 
@@ -285,7 +290,11 @@ class OfficerActivityViewModel extends ChangeNotifier {
   }
 
   // Reject submission
-  Future<bool> rejectSubmission(String activityId, String submissionId, String reviewNotes) async {
+  Future<bool> rejectSubmission(
+    String activityId,
+    String submissionId,
+    String reviewNotes,
+  ) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
@@ -294,29 +303,24 @@ class OfficerActivityViewModel extends ChangeNotifier {
       final batch = _db.batch();
 
       // Update submission status
-      batch.update(
-        _db.collection('activity_submissions').doc(submissionId),
-        {
-          'status': 'Rejected',
-          'reviewNotes': reviewNotes,
-          'reviewedAt': FieldValue.serverTimestamp(),
-        },
-      );
+      batch.update(_db.collection('activity_submissions').doc(submissionId), {
+        'status': 'Rejected',
+        'reviewNotes': reviewNotes,
+        'reviewedAt': FieldValue.serverTimestamp(),
+      });
 
       // Update activity status
-      final activityQuery = await _db
-          .collection('activities')
-          .where('activityId', isEqualTo: activityId)
-          .limit(1)
-          .get();
+      final activityQuery =
+          await _db
+              .collection('activities')
+              .where('activityId', isEqualTo: activityId)
+              .limit(1)
+              .get();
 
       if (activityQuery.docs.isNotEmpty) {
         batch.update(
           _db.collection('activities').doc(activityQuery.docs.first.id),
-          {
-            'status': 'Rejected',
-            'updatedAt': FieldValue.serverTimestamp(),
-          },
+          {'status': 'Rejected', 'updatedAt': FieldValue.serverTimestamp()},
         );
       }
 
