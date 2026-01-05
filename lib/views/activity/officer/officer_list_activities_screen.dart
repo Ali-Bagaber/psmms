@@ -168,7 +168,7 @@ class OfficerListActivitiesScreen extends StatelessWidget {
   }
 
   Widget _buildFilterTabs(OfficerActivityViewModel viewModel) {
-    final filters = ['All', 'Assigned', 'Approved', 'Rejected'];
+    final filters = ['All', 'Assigned', 'Submitted', 'Approved', 'Rejected'];
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       color: Colors.white,

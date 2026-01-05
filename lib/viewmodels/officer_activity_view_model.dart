@@ -62,6 +62,8 @@ class OfficerActivityViewModel extends ChangeNotifier {
     if (_statusFilter != 'All') {
       if (_statusFilter == 'Assigned') {
         result = result.where((a) => a.status == 'Assigned').toList();
+      } else if (_statusFilter == 'Submitted') {
+        result = result.where((a) => a.status == 'Submitted').toList();
       } else if (_statusFilter == 'Approved') {
         result = result.where((a) => a.status == 'Approved').toList();
       } else if (_statusFilter == 'Rejected') {

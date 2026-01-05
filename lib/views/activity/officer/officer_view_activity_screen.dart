@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../models/activity.dart';
 import '../../../models/activity_submission.dart';
 import '../../../viewmodels/officer_activity_view_model.dart';
@@ -240,23 +241,41 @@ class OfficerViewActivityScreen extends StatelessWidget {
               DateFormat('dd MMM yyyy, HH:mm').format(submission.submittedAt),
             ),
             const SizedBox(height: 12),
-            Container(
-              height: 200,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade200,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.map, size: 48, color: Colors.grey.shade400),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Map View',
-                      style: TextStyle(color: Colors.grey.shade600),
-                    ),
-                  ],
+            InkWell(
+              onTap: () async {
+                final url = Uri.parse(
+                  'https://www.google.com/maps/search/?api=1&query=${submission.latitude},${submission.longitude}',
+                );
+                if (await canLaunchUrl(url)) {
+                  await launchUrl(url, mode: LaunchMode.externalApplication);
+                }
+              },
+              child: Container(
+                height: 200,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade200,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.map, size: 48, color: Colors.grey.shade400),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Map View',
+                        style: TextStyle(color: Colors.grey.shade600),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Tap to open in Google Maps',
+                        style: TextStyle(
+                          color: Colors.grey.shade500,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -272,15 +291,63 @@ class OfficerViewActivityScreen extends StatelessWidget {
                 scrollDirection: Axis.horizontal,
                 itemCount: submission.photoUrls.length,
                 itemBuilder: (context, index) {
-                  return Container(
-                    width: 100,
-                    height: 100,
-                    margin: const EdgeInsets.only(right: 12),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      image: DecorationImage(
-                        image: NetworkImage(submission.photoUrls[index]),
-                        fit: BoxFit.cover,
+                  return GestureDetector(
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder:
+                            (context) => Dialog(
+                              backgroundColor: Colors.black,
+                              child: Stack(
+                                children: [
+                                  Center(
+                                    child: InteractiveViewer(
+                                      child: Image.network(
+                                        submission.photoUrls[index],
+                                        fit: BoxFit.contain,
+                                      ),
+                                    ),
+                                  ),
+                                  Positioned(
+                                    top: 10,
+                                    right: 10,
+                                    child: IconButton(
+                                      icon: const Icon(
+                                        Icons.close,
+                                        color: Colors.white,
+                                        size: 30,
+                                      ),
+                                      onPressed: () => Navigator.pop(context),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                      );
+                    },
+                    child: Container(
+                      width: 100,
+                      height: 100,
+                      margin: const EdgeInsets.only(right: 12),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        image: DecorationImage(
+                          image: NetworkImage(submission.photoUrls[index]),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          color: Colors.black.withOpacity(0.1),
+                        ),
+                        child: const Center(
+                          child: Icon(
+                            Icons.zoom_in,
+                            color: Colors.white,
+                            size: 30,
+                          ),
+                        ),
                       ),
                     ),
                   );
